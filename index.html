@@ -431,6 +431,26 @@
   .hidden {
     display: none !important;
   }
+
+  /* Alert block at top of form */
+  .form-alert {
+    background: #eaf3fe;
+    border-radius: var(--radius-input);
+    padding: 16px 18px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary);
+  }
+
+  .form-alert a {
+    color: var(--text-link);
+    text-decoration: none;
+  }
+
+  .form-alert a:hover {
+    text-decoration: underline;
+  }
 </style>
 </head>
 <body>
@@ -466,6 +486,11 @@
 
     <!-- Right column / form -->
     <div class="modal-right">
+      <!-- Alert block -->
+      <div class="form-alert">
+        Это форма заказа нового ПО. Если лицензия уже была, но слетела, нужна на новом устройстве или есть другой вопрос — <a href="#" id="alert-link">Пиши в Хелпи</a>.
+      </div>
+
       <!-- "For whom" field -->
       <div class="form-group">
         <label class="form-label" id="field-for-label">
@@ -672,6 +697,17 @@
     }
   });
 
+  // ===== Alert link: same behavior as hint link =====
+  document.getElementById('alert-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    openSelect();
+    const problemOpt = document.querySelector('.problem-option');
+    if (problemOpt) {
+      problemOpt.style.background = 'var(--bg-pill)';
+      setTimeout(() => { problemOpt.style.background = ''; }, 1500);
+    }
+  });
+
   // ===== Submit =====
   document.getElementById('submit-button').addEventListener('click', () => {
     if (state.isProblemFlow) {
@@ -690,7 +726,7 @@
   document.querySelector('.add-self-link').addEventListener('click', (e) => {
     e.preventDefault();
     const input = document.querySelector('.form-input');
-    input.value = 'kivich@';
+    input.value = '@test-user';
   });
 </script>
 
