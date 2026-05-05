@@ -1,1395 +1,698 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Helpy — Прототип</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Helpy — Заказ ПО (прототип)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
+  :root {
+    --bg-card: #ffffff;
+    --bg-modal-left: #f0f0ee;
+    --bg-input: #ffffff;
+    --bg-pill: #f0f0ee;
+    --bg-pill-active: #ffffff;
+    --bg-button-dark: #1a1a1a;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --text-tertiary: #8a8a8a;
+    --text-link: #2b8cff;
+    --text-required: #ff4444;
+    --border-subtle: #e5e5e3;
+    --border-input: #d9d9d9;
+    --accent-teal: #00a88e;
+    --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.08);
+    --radius-modal: 16px;
+    --radius-input: 10px;
+    --radius-pill: 10px;
+    --radius-button: 10px;
+  }
+
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Background: real Helpy screenshot, dimmed */
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f0f2f5;
-    height: 100vh;
-    overflow: hidden;
-    font-size: 13px;
-    color: #1a1a1a;
+    background-color: #1a1a1a;
+    background-image: url('helpy-bg.jpg');
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 
-  /* ─── LAYOUT ─────────────────────────────────────────────── */
-  .app {
-    display: flex;
-    height: 100vh;
-    width: 100%;
-  }
-
-  /* ─── SIDEBAR NAV ────────────────────────────────────────── */
-  .sidenav {
-    width: 52px;
-    background: #fff;
-    border-right: 1px solid #e8eaed;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 0;
-    gap: 4px;
-    flex-shrink: 0;
+  /* Dimming overlay over the background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
     z-index: 1;
-  }
-  .sidenav-icon {
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    color: #8b949e;
-    position: relative;
-    transition: background .15s, color .15s;
-  }
-  .sidenav-icon:hover { background: #f0f2f5; color: #444; }
-  .sidenav-icon.active { background: #e8f0fe; color: #1a73e8; }
-  .sidenav-icon svg { width: 20px; height: 20px; }
-  .sidenav-badge {
-    position: absolute;
-    top: 2px; right: 2px;
-    background: #e53935;
-    color: #fff;
-    font-size: 9px;
-    font-weight: 700;
-    border-radius: 8px;
-    min-width: 14px; height: 14px;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 3px;
-  }
-  .sidenav-bottom { margin-top: auto; }
-  .sidenav-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6a9fd8, #4e7fc4);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 11px; font-weight: 600;
-    cursor: pointer;
-    position: relative;
-    margin: 0 auto;
-  }
-  .sidenav-avatar-dot {
-    position: absolute;
-    bottom: 0; right: 0;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: #22c55e;
-    border: 2px solid #fff;
+    pointer-events: none;
   }
 
-  /* ─── CHAT LIST ──────────────────────────────────────────── */
-  .chat-list {
-    width: 280px;
-    background: #fff;
-    border-right: 1px solid #e8eaed;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    overflow: hidden;
-  }
-  .chat-list-search {
-    padding: 10px 12px;
-    border-bottom: 1px solid #f0f2f5;
-  }
-  .chat-list-search input {
-    width: 100%;
-    padding: 6px 10px;
-    border: 1px solid #e8eaed;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #444;
-    outline: none;
-    background: #f8f9fa;
-    transition: border-color .15s, background .15s;
-  }
-  .chat-list-search input:focus { border-color: #1a73e8; background: #fff; }
-  .chat-list-scroll { overflow-y: auto; flex: 1; }
-
-  .section-label {
-    padding: 8px 12px 4px;
-    font-size: 11px;
-    color: #8b949e;
-    font-weight: 500;
-    letter-spacing: .3px;
-  }
-  .chat-item {
+  /* Modal container — centered */
+  .modal-wrapper {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background .12s;
-    position: relative;
+    justify-content: center;
+    padding: 40px 24px;
   }
-  .chat-item:hover { background: #f8f9fa; }
-  .chat-item.active { background: #e8f0fe; }
-  .chat-item-avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    position: relative;
-    background: #d0d7de;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; color: #fff;
-  }
-  .chat-item-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-  .chat-channel-badge {
-    position: absolute;
-    bottom: -3px; right: -4px;
-    background: #1a73e8;
-    color: #fff;
-    font-size: 8px;
-    font-weight: 700;
-    border-radius: 4px;
-    padding: 1px 3px;
-    border: 1.5px solid #fff;
-    line-height: 1.3;
-    z-index: 1;
-  }
-  .chat-item-body { flex: 1; min-width: 0; }
-  .chat-item-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: #1a1a1a;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: flex; align-items: center; gap: 5px;
-  }
-  .chat-item-name .channel-tag {
-    font-size: 9px;
-    background: #e8f0fe;
-    color: #1a73e8;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-weight: 700;
-  }
-  .chat-item-preview {
-    font-size: 12px;
-    color: #8b949e;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 1px;
-  }
-  .chat-item-meta {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
-    flex-shrink: 0;
-  }
-  .chat-item-time { font-size: 11px; color: #8b949e; }
-  .chat-item-unread {
-    background: #1a73e8;
-    color: #fff;
-    border-radius: 10px;
-    min-width: 18px; height: 18px;
-    font-size: 10px;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 4px;
-  }
-  .chat-item-check { color: #1a73e8; }
-  .chat-item-reassigned {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 12px;
-    background: #f0f6ff;
-    cursor: pointer;
-    transition: background .12s;
-  }
-  .chat-item-reassigned:hover { background: #e8f0fe; }
-  .reassign-icon { color: #1a73e8; font-size: 14px; }
-  .reassign-name { font-size: 12px; color: #444; }
-
-  /* ─── CHAT MAIN ──────────────────────────────────────────── */
-  .chat-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background: #f8f9fa;
-    min-width: 0;
-    position: relative;
-  }
-  .chat-topbar {
-    height: 48px;
-    background: #fff;
-    border-bottom: 1px solid #e8eaed;
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-  .chat-topbar-icon { color: #8b949e; cursor: pointer; }
-  .chat-topbar-icon:hover { color: #444; }
-  .channel-selector {
-    display: flex; align-items: center; gap: 6px;
-    padding: 4px 10px;
-    border: 1px solid #e8eaed;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #1a1a1a;
-    transition: background .12s, border-color .12s;
-    user-select: none;
-  }
-  .channel-selector:hover { background: #f0f2f5; border-color: #d0d7de; }
-  .channel-selector svg { color: #8b949e; }
-  .btn-finish {
-    display: flex; align-items: center; gap: 6px;
-    padding: 6px 14px;
-    background: #fff;
-    border: 1px solid #e8eaed;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: #1a1a1a;
-    transition: background .12s, border-color .12s;
-  }
-  .btn-finish:hover { background: #fef2f2; border-color: #fca5a5; color: #dc2626; }
-  .btn-finish svg { color: inherit; }
-  .topbar-right { margin-left: auto; }
-
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 20px 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-  .msg-bubble {
-    max-width: 68%;
-    background: #fff;
-    border-radius: 12px 12px 12px 2px;
-    padding: 10px 14px;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #1a1a1a;
-    box-shadow: 0 1px 2px rgba(0,0,0,.06);
-    position: relative;
-    align-self: flex-start;
-  }
-  .msg-time {
-    font-size: 11px;
-    color: #8b949e;
-    margin-top: 3px;
-    text-align: right;
-  }
-  .msg-system {
-    text-align: center;
-    font-size: 12px;
-    color: #8b949e;
-    font-style: italic;
-    margin: 8px 0;
-  }
-
-  /* ─── SUGGESTIONS PANEL ──────────────────────────────────── */
-  .suggestions-panel {
-    background: #fff;
-    border-top: 1px solid #e8eaed;
-    padding: 12px 16px;
-    flex-shrink: 0;
-  }
-  .suggestions-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 10px;
-  }
-  .suggestions-title {
-    font-size: 13px;
-    font-weight: 500;
-    color: #1a1a1a;
-  }
-  .suggestions-close {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    color: #8b949e;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    transition: background .12s, color .12s;
-    line-height: 1;
-  }
-  .suggestions-close:hover { background: #f0f2f5; color: #444; }
-  .suggestions-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding-bottom: 4px;
-  }
-  .suggestion-card {
-    border: 1px solid #e8eaed;
-    border-radius: 10px;
-    padding: 12px;
-    cursor: pointer;
-    transition: border-color .15s, box-shadow .15s, background .15s;
-    background: #fff;
-  }
-  .suggestion-card:hover {
-    border-color: #1a73e8;
-    box-shadow: 0 2px 8px rgba(26,115,232,.12);
-    background: #fafcff;
-  }
-  .suggestion-card:active { background: #e8f0fe; }
-  .suggestion-card-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: #1a1a1a;
-    line-height: 1.4;
-    margin-bottom: 6px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .suggestion-card-body {
-    font-size: 11px;
-    color: #8b949e;
-    line-height: 1.45;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  /* ─── CHAT INPUT ─────────────────────────────────────────── */
-  .chat-input-area {
-    background: #fff;
-    border-top: 1px solid #e8eaed;
-    padding: 8px 12px 10px;
-    flex-shrink: 0;
-  }
-  .chat-input-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #f0f2f5;
-    margin-bottom: 6px;
-  }
-  .toolbar-btn {
-    display: flex; align-items: center; gap: 4px;
-    background: none; border: none;
-    font-size: 12px; color: #8b949e;
-    cursor: pointer; padding: 2px 4px; border-radius: 4px;
-    transition: color .12s, background .12s;
-  }
-  .toolbar-btn:hover { color: #444; background: #f0f2f5; }
-  .toolbar-btn svg { width: 14px; height: 14px; }
-  .toolbar-separator { width: 1px; height: 16px; background: #e8eaed; }
-  .chat-input-row {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .chat-input-attach {
-    background: none; border: none; cursor: pointer;
-    color: #8b949e; display: flex; align-items: center;
-    padding: 4px; border-radius: 6px;
-    transition: color .12s, background .12s;
-  }
-  .chat-input-attach:hover { color: #1a73e8; background: #e8f0fe; }
-  .chat-input-field {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-size: 13px;
-    color: #1a1a1a;
-    resize: none;
-    font-family: inherit;
-    background: transparent;
-    min-height: 20px;
-    max-height: 80px;
-    line-height: 1.5;
-  }
-  .chat-input-field::placeholder { color: #b0b8c4; }
-  .chat-input-emoji, .chat-input-send {
-    background: none; border: none; cursor: pointer;
-    color: #8b949e; display: flex; align-items: center;
-    padding: 4px; border-radius: 6px;
-    transition: color .12s, background .12s;
-  }
-  .chat-input-emoji:hover { color: #f59e0b; background: #fef3c7; }
-  .chat-input-send { color: #1a73e8; }
-  .chat-input-send:hover { background: #e8f0fe; color: #1557b0; }
-
-  /* ─── RIGHT PANEL ────────────────────────────────────────── */
-  .right-panel {
-    width: 380px;
-    background: #fff;
-    border-left: 1px solid #e8eaed;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    overflow: hidden;
-  }
-  .right-panel-header {
-    padding: 14px 16px 0;
-    flex-shrink: 0;
-  }
-  .agent-info {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 14px;
-  }
-  .agent-avatar {
-    width: 44px; height: 44px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #b0c4de, #8a9db5);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; font-weight: 600; color: #fff;
-    position: relative; flex-shrink: 0;
-  }
-  .agent-avatar-badge {
-    position: absolute;
-    bottom: 0; right: 0;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: #f59e0b;
-    border: 2px solid #fff;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 8px;
-  }
-  .agent-name { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-  .agent-handle { font-size: 12px; color: #8b949e; margin-top: 1px; }
-
-  .panel-tabs {
-    display: flex;
-    border-bottom: 1px solid #e8eaed;
-    gap: 0;
-  }
-  .panel-tab {
-    padding: 8px 0;
-    margin-right: 20px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #8b949e;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: color .15s, border-color .15s;
-    user-select: none;
-  }
-  .panel-tab:hover { color: #444; }
-  .panel-tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
-
-  .panel-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 14px 16px;
-  }
-
-  /* CRM Panel */
-  .crm-section {
-    border: 1px solid #e8eaed;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    overflow: hidden;
-  }
-  .crm-section-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px;
-    cursor: pointer;
-    user-select: none;
-    transition: background .12s;
-  }
-  .crm-section-header:hover { background: #f8f9fa; }
-  .crm-section-title { font-size: 13px; font-weight: 600; color: #1a1a1a; }
-  .crm-section-badge {
-    font-size: 11px; font-weight: 700;
-    background: #f0f2f5; color: #8b949e;
-    border-radius: 10px; padding: 1px 6px;
-    margin-left: 4px;
-  }
-  .crm-section-chevron {
-    color: #8b949e; font-size: 12px;
-    transition: transform .2s;
-  }
-  .crm-section-chevron.open { transform: rotate(180deg); }
-  .crm-section-body { padding: 0 14px 12px; }
-  .crm-meta {
-    display: flex; align-items: flex-start;
-    margin-bottom: 8px;
-    font-size: 13px;
-    line-height: 1.4;
-  }
-  .crm-meta-icon { color: #8b949e; margin-right: 8px; flex-shrink: 0; margin-top: 1px; font-size: 14px; }
-  .crm-meta-value { color: #1a1a1a; }
-  .crm-meta-label { color: #8b949e; font-size: 11px; margin-top: 2px; }
-
-  /* Expanded CRM user card */
-  .crm-user-card {
-    border: 1px solid #e8eaed;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    overflow: hidden;
-  }
-  .crm-user-card-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px;
-    cursor: pointer; user-select: none;
-    transition: background .12s;
-  }
-  .crm-user-card-header:hover { background: #f8f9fa; }
-  .crm-user-handle { font-size: 14px; font-weight: 600; color: #1a1a1a; }
-  .crm-user-meta { font-size: 11px; color: #8b949e; margin-top: 1px; }
-  .crm-user-body { padding: 0 14px 14px; }
-  .crm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 10px; }
-  .crm-field label { font-size: 11px; color: #8b949e; display: block; margin-bottom: 2px; }
-  .crm-field span { font-size: 13px; color: #1a1a1a; }
-  .crm-field.full { grid-column: 1 / -1; }
-  .crm-breadcrumb { display: flex; align-items: center; gap: 4px; font-size: 13px; }
-  .crm-breadcrumb span { color: #1a73e8; cursor: pointer; }
-  .crm-breadcrumb span:hover { text-decoration: underline; }
-  .crm-breadcrumb .sep { color: #8b949e; font-size: 11px; }
-  .crm-breadcrumb .dots { color: #8b949e; cursor: pointer; }
-  .crm-contact-btns { display: flex; gap: 8px; margin-top: 10px; }
-  .crm-contact-btn {
-    display: flex; align-items: center; gap: 5px;
-    padding: 5px 10px;
-    border: 1px solid #e8eaed;
-    border-radius: 7px;
-    font-size: 12px; color: #444;
-    cursor: pointer; background: #fff;
-    transition: background .12s, border-color .12s;
-  }
-  .crm-contact-btn:hover { background: #f0f2f5; border-color: #d0d7de; }
-
-  /* Knowledge Base Panel */
-  .kb-panel { padding: 14px 16px; }
-  .kb-article-title {
-    font-size: 16px; font-weight: 600; color: #1a1a1a;
-    line-height: 1.35; margin-bottom: 6px;
-  }
-  .kb-article-date { font-size: 12px; color: #8b949e; margin-bottom: 16px; }
-  .kb-field { display: flex; gap: 14px; margin-bottom: 14px; }
-  .kb-field-icon { color: #8b949e; font-size: 14px; flex-shrink: 0; margin-top: 2px; }
-  .kb-field-label { font-size: 12px; color: #8b949e; min-width: 120px; flex-shrink: 0; margin-top: 2px; }
-  .kb-field-value { font-size: 13px; color: #1a1a1a; line-height: 1.5; }
-  .kb-status-badge {
-    display: inline-block;
-    background: #dcfce7; color: #16a34a;
-    font-size: 12px; font-weight: 500;
-    padding: 2px 10px; border-radius: 20px;
-  }
-  .kb-apply-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 14px;
-    border: 1px solid #e8eaed;
-    border-radius: 8px;
-    font-size: 13px; color: #444;
-    cursor: pointer; background: #fff;
-    transition: background .12s, border-color .12s;
-    margin-top: 6px;
-  }
-  .kb-apply-btn:hover { background: #f0f2f5; border-color: #d0d7de; }
-
-  /* ─── MODAL OVERLAY ──────────────────────────────────────── */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.35);
-    display: flex; align-items: center; justify-content: center;
-    gap: 20px;
-    z-index: 100;
-    opacity: 0; pointer-events: none;
-    transition: opacity .2s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
 
   .modal {
-    background: #fff;
-    border-radius: 14px;
-    width: 720px;
-    max-width: calc(100vw - 160px);
-    max-height: calc(100vh - 60px);
-    box-shadow: 0 12px 48px rgba(0,0,0,.18);
-    display: flex; flex-direction: column;
-    overflow: hidden;
-    transform: translateY(12px) scale(.98);
-    transition: transform .22s cubic-bezier(.34,1.4,.64,1);
-    flex-shrink: 0;
-  }
-  .modal-overlay.open .modal {
-    transform: translateY(0) scale(1);
-  }
-
-  .modal-header {
-    padding: 16px 20px 12px;
-    display: flex; align-items: flex-start; gap: 10px;
-    border-bottom: 1px solid #f0f2f5;
-    flex-shrink: 0;
-  }
-  .modal-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-  .modal-tag {
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 12px; font-weight: 500;
-    border: 1px solid #e8eaed;
-    color: #444;
-    background: #f8f9fa;
-  }
-  .modal-tag.recommended {
-    background: #e8f0fe; color: #1a73e8; border-color: #c5d8fb;
-  }
-  .modal-close {
-    margin-left: auto;
-    width: 28px; height: 28px;
-    border-radius: 50%; border: none; background: transparent;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    color: #8b949e; font-size: 18px;
-    transition: background .12s, color .12s;
-    flex-shrink: 0;
-  }
-  .modal-close:hover { background: #f0f2f5; color: #1a1a1a; }
-
-  /* Carousel */
-  .modal-carousel {
-    flex: 1; overflow: hidden; position: relative;
-  }
-  .carousel-track {
-    display: flex;
-    height: 100%;
-    transition: transform .3s cubic-bezier(.4,0,.2,1);
-  }
-  .carousel-slide {
-    min-width: 100%;
-    padding: 20px 24px 16px;
-    overflow-y: auto;
-  }
-
-  /* Slide content */
-  .slide-title {
-    font-size: 20px; font-weight: 700; color: #1a1a1a;
-    line-height: 1.3; margin-bottom: 6px;
-  }
-  .slide-date { font-size: 12px; color: #8b949e; margin-bottom: 20px; }
-  .slide-field {
+    background: var(--bg-card);
+    border-radius: var(--radius-modal);
+    width: 100%;
+    max-width: 1024px;
     display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 10px;
-    margin-bottom: 16px;
-    align-items: start;
-  }
-  .slide-field-label {
-    display: flex; align-items: flex-start; gap: 6px;
-    font-size: 13px; color: #8b949e;
-  }
-  .slide-field-label svg { flex-shrink: 0; margin-top: 1px; color: #b0b8c4; }
-  .slide-field-value { font-size: 13px; color: #1a1a1a; line-height: 1.55; }
-  .slide-status-badge {
-    display: inline-block;
-    background: #dcfce7; color: #16a34a;
-    font-size: 12px; font-weight: 500;
-    padding: 2px 12px; border-radius: 20px;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+    overflow: visible;
   }
 
-  /* Empty slide */
-  .slide-empty {
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    height: 100%;
-    text-align: center;
-    gap: 16px;
-    background: #fff;
-  }
-  .slide-empty-title {
-    font-size: 16px; font-weight: 600; color: #1a1a1a;
-  }
-  .slide-empty-body { font-size: 13px; color: #8b949e; line-height: 1.5; max-width: 260px; }
-
-  /* Nav arrows — sit as flex siblings of .modal inside the overlay */
-  .carousel-nav {
-    flex-shrink: 0;
-    width: 36px; height: 36px;
+  .modal-close {
+    position: absolute;
+    top: 16px;
+    right: -52px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.92);
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 2px 10px rgba(0,0,0,.22);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: #333;
-    transition: background .12s, box-shadow .12s, transform .12s;
-  }
-  .carousel-nav:hover { background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.28); transform: scale(1.08); }
-  .carousel-nav:disabled { opacity: .3; pointer-events: none; }
-
-  /* Dots */
-  .carousel-dots {
-    display: flex; align-items: center; justify-content: center;
-    gap: 6px;
-    padding: 8px 0 12px;
-    flex-shrink: 0;
-  }
-  .carousel-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: #d0d7de;
-    transition: background .15s, width .2s;
-    cursor: pointer;
-  }
-  .carousel-dot.active { background: #1a73e8; width: 18px; border-radius: 3px; }
-
-  .modal-footer {
-    padding: 12px 20px 16px;
-    display: flex; align-items: center; justify-content: flex-end;
-    gap: 10px;
-    border-top: 1px solid #f0f2f5;
-    flex-shrink: 0;
-  }
-  .btn-secondary {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 16px;
-    border: 1px solid #e8eaed;
-    border-radius: 8px;
-    background: #fff; color: #1a1a1a;
-    font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    transition: background .12s, border-color .12s, color .12s;
-  }
-  .btn-secondary:hover { background: #f0f2f5; border-color: #d0d7de; }
-  .btn-secondary:active { background: #e8eaed; }
-  .btn-primary {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 16px;
+    background: white;
     border: none;
-    border-radius: 8px;
-    background: #1a73e8; color: #fff;
-    font-size: 13px; font-weight: 500;
     cursor: pointer;
-    transition: background .12s, box-shadow .12s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    color: #1a1a1a;
   }
-  .btn-primary:hover { background: #1557b0; box-shadow: 0 2px 8px rgba(26,115,232,.35); }
-  .btn-primary:active { background: #124aa0; }
-  .btn-go-kb {
-    display: flex; align-items: center; gap: 6px;
-    padding: 8px 18px;
+
+  .modal-left {
+    background: var(--bg-modal-left);
+    padding: 32px;
+    border-radius: var(--radius-modal) 0 0 var(--radius-modal);
+  }
+
+  .modal-left h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .modal-left p {
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+
+  .modal-left h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .modal-right {
+    padding: 32px;
+    position: relative;
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+
+  .form-label .required {
+    color: var(--text-required);
+    margin-left: 2px;
+  }
+
+  .form-input {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--border-input);
+    border-radius: var(--radius-input);
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--bg-input);
+    color: var(--text-primary);
+    transition: border-color 0.15s;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--text-primary);
+  }
+
+  .form-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .add-self-link {
+    display: block;
+    text-align: right;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .add-self-link:hover {
+    color: var(--text-primary);
+  }
+
+  /* Pill group (OS selector) */
+  .pill-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    background: var(--bg-pill);
+    border-radius: var(--radius-pill);
+    padding: 4px;
+  }
+
+  .pill {
+    height: 40px;
     border: none;
+    background: transparent;
     border-radius: 8px;
-    background: #1a73e8; color: #fff;
-    font-size: 13px; font-weight: 500;
+    font-family: inherit;
+    font-size: 14px;
     cursor: pointer;
-    margin-left: auto;
-    transition: background .12s;
+    transition: background 0.15s;
+    color: var(--text-primary);
   }
-  .btn-go-kb:hover { background: #1557b0; }
 
-  /* footer visible only on non-empty slides */
-  .modal-footer.hidden { display: none; }
-
-  /* ─── LOADING SPINNER ────────────────────────────────────── */
-  .spinner {
-    width: 28px; height: 28px;
-    border: 3px solid #e8eaed;
-    border-top-color: #1a73e8;
-    border-radius: 50%;
-    animation: spin .7s linear infinite;
+  .pill.active {
+    background: var(--bg-pill-active);
+    box-shadow: var(--shadow-pill);
+    font-weight: 500;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* scrollbar */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #d0d7de; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #b0b8c4; }
+  /* Custom select */
+  .select-wrapper {
+    position: relative;
+  }
 
-  /* ─── CAT SVG ────────────────────────────────────────────── */
-  .cat-svg { width: 120px; height: 100px; }
+  .select-trigger {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1px solid var(--border-input);
+    border-radius: var(--radius-input);
+    background: var(--bg-input);
+    font-family: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-tertiary);
+    transition: border-color 0.15s;
+  }
+
+  .select-trigger.has-value {
+    color: var(--text-primary);
+  }
+
+  .select-trigger:hover {
+    border-color: #b0b0b0;
+  }
+
+  .select-trigger.open {
+    border-color: var(--text-primary);
+  }
+
+  .select-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .select-trigger.open .select-chevron {
+    transform: rotate(180deg);
+  }
+
+  .select-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-input);
+    border-radius: var(--radius-input);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 50;
+    max-height: 320px;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+  }
+
+  .select-dropdown.open {
+    display: flex;
+  }
+
+  .select-search {
+    padding: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    flex-shrink: 0;
+  }
+
+  .select-search input {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px 0 36px;
+    border: none;
+    background: var(--bg-pill);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>");
+    background-repeat: no-repeat;
+    background-position: 12px center;
+  }
+
+  .select-search input:focus {
+    outline: none;
+  }
+
+  .select-options {
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .select-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.1s;
+    color: var(--text-primary);
+  }
+
+  .select-option:hover {
+    background: var(--bg-pill);
+  }
+
+  .select-option.problem-option {
+    color: var(--text-primary);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .select-option.problem-option::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></svg>");
+    background-size: contain;
+    background-repeat: no-repeat;
+    flex-shrink: 0;
+  }
+
+  .form-textarea {
+    width: 100%;
+    min-height: 96px;
+    padding: 12px 16px;
+    border: 1px solid var(--border-input);
+    border-radius: var(--radius-input);
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--bg-input);
+    color: var(--text-primary);
+    resize: vertical;
+    transition: border-color 0.15s;
+  }
+
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--text-primary);
+  }
+
+  .form-textarea::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .field-hint {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: right;
+  }
+
+  .field-hint a {
+    color: var(--text-link);
+    text-decoration: none;
+  }
+
+  .field-hint a:hover {
+    text-decoration: underline;
+  }
+
+  .submit-button {
+    background: var(--bg-button-dark);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: var(--radius-button);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .submit-button:hover {
+    opacity: 0.9;
+  }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg-button-dark);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 300;
+    max-width: 90vw;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Helper for hidden state */
+  .hidden {
+    display: none !important;
+  }
 </style>
 </head>
 <body>
 
-<div class="app">
-
-  <!-- Sidebar nav -->
-  <div class="sidenav">
-    <div class="sidenav-icon active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1a6 6 0 0112 0v1"/><circle cx="12" cy="12" r="10"/></svg>
-    </div>
-    <div class="sidenav-icon" style="position:relative">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      <span class="sidenav-badge">4</span>
-    </div>
-    <div class="sidenav-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-    </div>
-    <div class="sidenav-bottom">
-      <div class="sidenav-icon" style="margin-bottom:4px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-      </div>
-      <div class="sidenav-icon" style="margin-bottom:8px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.81 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
-      </div>
-      <div class="sidenav-avatar">
-        AA
-        <div class="sidenav-avatar-dot"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Chat list -->
-  <div class="chat-list">
-    <div class="chat-list-search">
-      <input type="text" placeholder="Поиск">
-    </div>
-    <div class="chat-list-scroll">
-      <div class="section-label">Мои · 1</div>
-
-      <!-- Active chat -->
-      <div class="chat-item active" id="chatItemHoma">
-        <div class="chat-item-avatar" style="background:#4e7fc4">
-          ХХ
-          <span class="chat-channel-badge">IT</span>
-        </div>
-        <div class="chat-item-body">
-          <div class="chat-item-name">Хома Хомикесса</div>
-          <div class="chat-item-preview">Вы: one minute</div>
-        </div>
-        <div class="chat-item-meta">
-          <span class="chat-item-check">✓</span>
-        </div>
-      </div>
-
-      <!-- Reassigned -->
-      <div class="chat-item-reassigned">
-        <span class="reassign-icon">↺</span>
-        <div class="chat-item-avatar" style="width:26px;height:26px;font-size:10px;background:#6b7280">КВ</div>
-        <span class="reassign-name">Кивич Вячеслав</span>
-      </div>
-
-      <div class="section-label" style="margin-top:6px">Новые · 3</div>
-
-      <div class="chat-item">
-        <div class="chat-item-avatar" style="background:#e06060">СВ<span class="chat-channel-badge">IT</span></div>
-        <div class="chat-item-body">
-          <div class="chat-item-name">Светлана Вавилова <span style="font-size:10px;color:#8b949e;font-weight:400">6 мин</span></div>
-          <div class="chat-item-preview">Привет! Как пользоваться принтером в...</div>
-        </div>
-        <div class="chat-item-meta"><span class="chat-item-unread">1</span></div>
-      </div>
-      <div class="chat-item">
-        <div class="chat-item-avatar" style="background:#7c5caa">КШ<span class="chat-channel-badge">IT</span></div>
-        <div class="chat-item-body">
-          <div class="chat-item-name">Карина Шведова <span style="font-size:10px;color:#8b949e;font-weight:400">4 мин</span></div>
-          <div class="chat-item-preview">Привет, а как получить справку от работодате...</div>
-        </div>
-        <div class="chat-item-meta"><span class="chat-item-unread">1</span></div>
-      </div>
-      <div class="chat-item">
-        <div class="chat-item-avatar" style="background:#2d7a4f">КК<span class="chat-channel-badge">IT</span></div>
-        <div class="chat-item-body">
-          <div class="chat-item-name">Константин Констан...</div>
-          <div class="chat-item-preview">А как мне получить мерч от яндекса? я только уст...</div>
-        </div>
-        <div class="chat-item-meta"><span class="chat-item-unread" style="background:#e53935">3</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Chat main -->
-  <div class="chat-main">
-    <!-- Topbar -->
-    <div class="chat-topbar">
-      <svg class="chat-topbar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-
-      <div class="channel-selector">
-        Канал: IT
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-
-      <div class="btn-finish">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        Завершить
-      </div>
-
-      <div class="topbar-right">
-        <svg class="chat-topbar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-      </div>
-    </div>
-
-    <!-- Messages -->
-    <div class="chat-messages">
-      <div class="msg-bubble">
-        Привет! Подскажите, как пользоваться печатью в офисе? Не могу разобраться с принтером.
-        <div class="msg-time">10:00</div>
-      </div>
-      <div class="msg-system">Вячеслав @fishervv взял(-а) обращение в работу · 00:00</div>
-    </div>
-
-    <!-- Suggestions panel -->
-    <div class="suggestions-panel" id="suggestionsPanel">
-      <div class="suggestions-header">
-        <span class="suggestions-title">Выберите подходящее знание для ответа</span>
-        <button class="suggestions-close" id="closeSuggestions" title="Скрыть подсказки">×</button>
-      </div>
-      <div class="suggestions-cards">
-        <div class="suggestion-card" onclick="openModal(0)">
-          <div class="suggestion-card-title">Как распечатать документ на офисном принтере?</div>
-          <div class="suggestion-card-body">Чтобы воспользоваться печатью, подойдите к принтеру и авторизуйтесь с помощью бейджа...</div>
-        </div>
-        <div class="suggestion-card" onclick="openModal(1)">
-          <div class="suggestion-card-title">Заказ принтера на рабочее место</div>
-          <div class="suggestion-card-body">Если вам необходим личный принтер на рабочем месте, вы можете оформить заявку...</div>
-        </div>
-        <div class="suggestion-card" onclick="openModal(2)">
-          <div class="suggestion-card-title">Принтер не работает — как подать заявку на ремонт?</div>
-          <div class="suggestion-card-body">Если офисный принтер неисправен или выдаёт ошибку, необходимо создать заявку...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Input area -->
-    <div class="chat-input-area">
-      <div class="chat-input-toolbar">
-        <button class="toolbar-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        </button>
-        <button class="toolbar-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          Улучшить текст
-        </button>
-        <div class="toolbar-separator"></div>
-        <button class="toolbar-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h11M9 3v2M13.5 12h7.5M13.5 18h7.5M9.5 15l2.5-3-2.5-3"/></svg>
-          Перевести EN
-        </button>
-      </div>
-      <div class="chat-input-row">
-        <button class="chat-input-attach">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
-        </button>
-        <textarea class="chat-input-field" id="chatInput" placeholder="Сообщение..." rows="1"></textarea>
-        <button class="chat-input-emoji">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg>
-        </button>
-        <button class="chat-input-send">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Right panel -->
-  <div class="right-panel">
-    <div class="right-panel-header">
-      <div class="agent-info">
-        <div class="agent-avatar">
-          AA
-          <div class="agent-avatar-badge">⚙</div>
-        </div>
-        <div>
-          <div class="agent-name">Ava Anderson</div>
-          <div class="agent-handle">@Ava123</div>
-        </div>
-      </div>
-      <div class="panel-tabs">
-        <div class="panel-tab active" id="tabCRM" onclick="switchTab('crm')">CRM</div>
-        <div class="panel-tab" id="tabKB" onclick="switchTab('kb')">База знаний</div>
-      </div>
-    </div>
-
-    <!-- CRM body -->
-    <div class="panel-body" id="panelCRM">
-      <!-- User card -->
-      <div class="crm-user-card">
-        <div class="crm-user-card-header">
-          <div>
-            <div class="crm-user-handle">@homa12</div>
-            <div class="crm-user-meta">Был в сети 10 минут назад, Москва, БЦ «Савин»</div>
-          </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b949e" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-        </div>
-        <div class="crm-user-body">
-          <div class="crm-grid">
-            <div class="crm-field"><label>Организация</label><span>Text value</span></div>
-            <div class="crm-field"><label>Должность</label><span>Text value</span></div>
-            <div class="crm-field full">
-              <label>Подразделение</label>
-              <div class="crm-breadcrumb">
-                <span>Яндекс</span>
-                <span class="sep">›</span>
-                <span class="dots">···</span>
-                <span class="sep">›</span>
-                <span>Пул продуктов "Helpy"</span>
-              </div>
-            </div>
-            <div class="crm-field"><label>Рабочее место</label><span>Text value</span></div>
-            <div class="crm-field"><label>Дата выхода</label><span>Text value</span></div>
-            <div class="crm-field"><label>Руководитель</label><span>Text value</span></div>
-            <div class="crm-field"><label>HR-партнёр</label><span>Text value</span></div>
-            <div class="crm-field"><label>HR-партнёр</label><span>Text value</span></div>
-            <div class="crm-field"><label>Ассистент</label><span>Text value</span></div>
-          </div>
-          <div class="crm-contact-btns">
-            <div class="crm-contact-btn">
-              Рабочие контакты
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="crm-contact-btn">
-              Личные контакты
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Collapsible sections -->
-      <div class="crm-section">
-        <div class="crm-section-header" onclick="toggleSection(this)">
-          <span class="crm-section-title">Логин</span>
-          <span class="crm-section-chevron">▾</span>
-        </div>
-      </div>
-      <div class="crm-section">
-        <div class="crm-section-header" onclick="toggleSection(this)">
-          <span class="crm-section-title">Password</span>
-          <span class="crm-section-chevron">▾</span>
-        </div>
-      </div>
-      <div class="crm-section">
-        <div class="crm-section-header" onclick="toggleSection(this)">
-          <span class="crm-section-title">Startrek <span class="crm-section-badge">4</span></span>
-          <span class="crm-section-chevron">▾</span>
-        </div>
-      </div>
-      <div class="crm-section">
-        <div class="crm-section-header" onclick="toggleSection(this)">
-          <span class="crm-section-title">Оборудование</span>
-          <span class="crm-section-chevron">▾</span>
-        </div>
-      </div>
-      <div class="crm-section">
-        <div class="crm-section-header" onclick="toggleSection(this)">
-          <span class="crm-section-title">Софт</span>
-          <span class="crm-section-chevron">▾</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- KB body (hidden initially) -->
-    <div class="panel-body" id="panelKB" style="display:none">
-      <div id="kbLoading" style="display:flex;align-items:center;justify-content:center;height:200px">
-        <div class="spinner"></div>
-      </div>
-      <div id="kbContent" style="display:none">
-        <div class="kb-article-title">Как пользоваться печатью в офисе?</div>
-        <div class="kb-article-date">Создано 13 мар, 12:01, обновлено вчера в 19:07</div>
-        <div class="kb-field">
-          <span class="kb-field-icon">🏢</span>
-          <span class="kb-field-label">Юрлицо</span>
-          <span class="kb-field-value">Казахстан 2, ООО «Яндекс Алиса»</span>
-        </div>
-        <div class="kb-field">
-          <span class="kb-field-icon">👥</span>
-          <span class="kb-field-label">Подразделение</span>
-          <span class="kb-field-value">Департамент контроля качества</span>
-        </div>
-        <div class="kb-field">
-          <span class="kb-field-icon">↺</span>
-          <span class="kb-field-label">Статус</span>
-          <span class="kb-field-value"><span class="kb-status-badge">Актуально</span></span>
-        </div>
-        <div class="kb-field">
-          <span class="kb-field-icon">≡</span>
-          <span class="kb-field-label">Шаблон ответа</span>
-          <div class="kb-field-value">
-            Чтобы воспользоваться печатью, подойдите к принтеру и авторизуйтесь с помощью бейджа — приложите его к считывателю на корпусе устройства. Далее на экране принтера нажмите кнопку «Почта» и выберите нужные файлы. После выбора нажмите «Принт». Забрать распечатку можно сразу из лотка принтера.
-            <br><br>
-            <button class="kb-apply-btn" onclick="applyTemplate()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.81 19.79 19.79 0 01.07 2.18 2 2 0 012.03 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg>
-              Применить шаблон
-            </button>
-          </div>
-        </div>
-        <div class="kb-field">
-          <span class="kb-field-icon">≡</span>
-          <span class="kb-field-label">Внутренняя информация</span>
-          <span class="kb-field-value">Актуально для всех офисов. Модели принтеров могут отличаться — уточните у коллег наличие бейдж-ридера на конкретном устройстве.</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ─── MODAL ──────────────────────────────────────────────── -->
-<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
-  <!-- Prev nav — LEFT of modal -->
-  <button class="carousel-nav prev" id="prevBtn" onclick="prevSlide()" disabled>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-
+<!-- Modal centered over dimmed Helpy screenshot -->
+<div class="modal-wrapper">
   <div class="modal" id="modal">
-    <!-- Header -->
-    <div class="modal-header">
-      <div class="modal-tags" id="modalTags">
-        <span class="modal-tag">Знание 1</span>
-        <span class="modal-tag recommended">Рекомендовано для этого пользователя</span>
-      </div>
-      <button class="modal-close" onclick="closeModal()">×</button>
+    <button class="modal-close" aria-label="Close">✕</button>
+
+    <!-- Left column -->
+    <div class="modal-left">
+      <h2>Заказ нового ПО</h2>
+      <p>Вы можете заказать программное обеспечение в следующих случаях:</p>
+      <p>— отсутствует необходимое ПО,</p>
+      <p>— требуется обновление программного обеспечения согласно регламенту,</p>
+      <p>— необходимо установить новую версию операционной системы (Windows, macOS, Linux).</p>
+      <p style="margin-top: 12px;">Также доступен запрос ПО для специализированных задач:</p>
+      <p>— организация онлайн-мероприятий,</p>
+      <p>— проведение видеоконференций,</p>
+      <p>— выполнение учебных тестов.</p>
+      <p style="margin-top: 12px;">Программное обеспечение предоставляется как постоянным, так и временным сотрудникам, а также стажёрам.</p>
+
+      <h4>Согласование</h4>
+      <p>Необходимо в следующих случаях:</p>
+      <p>— требуется установка ПО вне установленного регламента,</p>
+      <p>— запрашиваемая версия не соответствует должностным обязанностям сотрудника,</p>
+      <p>— ПО запрашивается для внешнего консультанта или представителя подрядчика.</p>
+      <p style="margin-top: 8px;">Если согласование происходило в рамках другого запроса, укажите его номер в комментариях к заявке.</p>
+
+      <h4>Результат</h4>
+      <p>Программное обеспечение с выбранной конфигурацией.</p>
     </div>
 
-    <!-- Carousel -->
-    <div class="modal-carousel" style="position:relative">
-      <div class="carousel-track" id="carouselTrack">
-
-        <!-- Slide 1 -->
-        <div class="carousel-slide">
-          <div class="slide-title">Как распечатать документ на офисном принтере?</div>
-          <div class="slide-date">Создано 13 мар, 12:01, обновлено вчера в 19:07</div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-              Шаблон ответа
-            </div>
-            <div class="slide-field-value">Чтобы воспользоваться печатью, подойдите к принтеру и авторизуйтесь с помощью бейджа — приложите его к считывателю на корпусе устройства. Далее на экране принтера нажмите кнопку «Почта» и выберите нужные файлы из списка. После выбора нажмите кнопку «Принт» — документ начнёт печататься. Забрать распечатку можно сразу из лотка принтера.</div>
-          </div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-              Статус
-            </div>
-            <div class="slide-field-value"><span class="slide-status-badge">Актуально</span></div>
-          </div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-              Внутренняя информация
-            </div>
-            <div class="slide-field-value">Актуально для всех офисов. Модели принтеров могут отличаться — уточните у коллег наличие бейдж-ридера на конкретном устройстве.</div>
-          </div>
-        </div>
-
-        <!-- Slide 2 -->
-        <div class="carousel-slide">
-          <div class="slide-title">Заказ принтера на рабочее место</div>
-          <div class="slide-date">Создано 5 мар, 10:30, обновлено вчера в 15:20</div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              Шаблон ответа
-            </div>
-            <div class="slide-field-value">Если вам необходим личный принтер на рабочем месте, вы можете оформить заявку через портал IT-оборудования. Перейдите в раздел «Заказ техники», выберите тип устройства «Принтер», укажите модель и обоснование потребности. Заявка будет рассмотрена в течение 3 рабочих дней. Доставка и подключение осуществляются силами IT-отдела.</div>
-          </div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-              Статус
-            </div>
-            <div class="slide-field-value"><span class="slide-status-badge">Актуально</span></div>
-          </div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-              Внутренняя информация
-            </div>
-            <div class="slide-field-value">Шаблон подходит, если сотрудник хочет получить личное устройство. Если вопрос об офисном принтере — используйте другой шаблон.</div>
-          </div>
-        </div>
-
-        <!-- Slide 3 -->
-        <div class="carousel-slide">
-          <div class="slide-title">Принтер не работает — как подать заявку на ремонт?</div>
-          <div class="slide-date">Создано 1 мар, 09:00, обновлено 2 дня назад в 11:00</div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              Шаблон ответа
-            </div>
-            <div class="slide-field-value">Если офисный принтер неисправен, не включается или выдаёт ошибку, необходимо создать заявку на ремонт. Перейдите в Startrek, создайте тикет с типом «Оборудование — ремонт», укажите инвентарный номер принтера (наклейка на корпусе) и описание неисправности. Специалист свяжется с вами в течение рабочего дня.</div>
-          </div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-              Статус
-            </div>
-            <div class="slide-field-value"><span class="slide-status-badge">Актуально</span></div>
-          </div>
-          <div class="slide-field">
-            <div class="slide-field-label">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-              Внутренняя информация
-            </div>
-            <div class="slide-field-value">Шаблон подходит если принтер сломан. Если сотруднику нужно просто распечатать — используйте первый шаблон.</div>
-          </div>
-        </div>
-
-        <!-- Slide 4: Empty state -->
-        <div class="carousel-slide">
-          <div class="slide-empty">
-            <img src="data:image/jpeg;base64,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ABQAUAFABQB/FBqbH9j7/g8x0u8kRtE8Lf8ABQL9maKAy5S10+4kvfhBLpsShpGjWdtd+LX7LNmjRxmaWXXtVQhMuAoB/a/QAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFAHC/FDwNYfE74Z/ET4a6qFOl/ELwL4u8DakHOENh4s0DUNAvAx8ubCm31CTcfJlwM/u3+6QD+R7/gys8bapqX/BO79pP4caml0B8P/wBsXxFqNh9q3K1la+MfhH8KRcaOkLkPAtpq/hrU9QliaNGF1rFwWZiSsYB/Y3QAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAFABQAUAfKHxP/AGGv2TvjP+0R8Jf2sPij8E/C/jT9ob4E6fbaX8JPidq91r51fwPZ2WtXviGzGk6fbaxb6A9xaazqV/fWt7faTd3tu95cRw3CQSvEQD6voAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKACgAoAKAAP/Z" alt="cat" style="width:180px;height:auto;"/>
-            <div class="slide-empty-title">Ни один шаблон не подошёл?</div>
-            <div class="slide-empty-body">Перейдите в базу знаний и попробуйте вручную найти подходящий шаблон.</div>
-          </div>
-        </div>
-
+    <!-- Right column / form -->
+    <div class="modal-right">
+      <!-- "For whom" field -->
+      <div class="form-group">
+        <label class="form-label" id="field-for-label">
+          Заказать новое ПО для <span class="required">*</span>
+        </label>
+        <input type="text" class="form-input" placeholder="login@" />
+        <a href="#" class="add-self-link">Добавить себя</a>
       </div>
 
-    </div>
+      <!-- OS field -->
+      <div class="form-group">
+        <label class="form-label">
+          Ваша операционная система <span class="required">*</span>
+        </label>
+        <div class="pill-group">
+          <button class="pill active" data-os="windows">Windows</button>
+          <button class="pill" data-os="macos">MacOS</button>
+          <button class="pill" data-os="linux">Linux</button>
+        </div>
+      </div>
 
-    <!-- Dots -->
-    <div class="carousel-dots" id="carouselDots">
-      <div class="carousel-dot active" onclick="goToSlide(0)"></div>
-      <div class="carousel-dot" onclick="goToSlide(1)"></div>
-      <div class="carousel-dot" onclick="goToSlide(2)"></div>
-      <div class="carousel-dot" onclick="goToSlide(3)"></div>
-    </div>
+      <!-- Apps field with custom select -->
+      <div class="form-group">
+        <label class="form-label">
+          Необходимые приложения <span class="required">*</span>
+        </label>
+        <div class="select-wrapper">
+          <button class="select-trigger" id="select-trigger">
+            <span id="select-label">Приложения</span>
+            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="select-dropdown" id="select-dropdown">
+            <div class="select-search">
+              <input type="text" placeholder="Найти [object]" id="select-search-input" />
+            </div>
+            <div class="select-options" id="select-options">
+              <!-- Special problem option always pinned at top -->
+              <div class="select-option problem-option" data-value="Проблемы с выданной лицензией" data-special="true">
+                Проблемы с выданной лицензией
+              </div>
+              <div class="select-option" data-value="Google workspace">Google workspace</div>
+              <div class="select-option" data-value="Miro">Miro</div>
+              <div class="select-option" data-value="Figma">Figma</div>
+              <div class="select-option" data-value="Cursor">Cursor</div>
+              <div class="select-option" data-value="Charles">Charles</div>
+              <div class="select-option" data-value="Photoshop">Photoshop</div>
+              <div class="select-option" data-value="Sketch">Sketch</div>
+              <div class="select-option" data-value="Slack">Slack</div>
+              <div class="select-option" data-value="Notion">Notion</div>
+              <div class="select-option" data-value="Zoom">Zoom</div>
+            </div>
+          </div>
+        </div>
+        <div class="field-hint" id="apps-hint">
+          Проблемы с выданной лицензией? <a href="#" id="problem-link">Напиши нам</a>
+        </div>
+      </div>
 
-    <!-- Footer (normal) -->
-    <div class="modal-footer" id="modalFooter">
-      <button class="btn-secondary" onclick="insertToChat()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        Вставить в чат
-      </button>
-      <button class="btn-primary" onclick="openKB()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-        Открыть знание
-      </button>
-    </div>
+      <!-- Justification (for normal flow) -->
+      <div class="form-group" id="justification-group">
+        <label class="form-label">
+          Обоснование для запроса <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" placeholder="Описание рабочих задач, для которых нужен запрашиваемый продукт"></textarea>
+      </div>
 
-    <!-- Footer (empty state) -->
-    <div class="modal-footer" id="modalFooterEmpty" style="display:none">
-      <button class="btn-go-kb" onclick="openKB()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
-        Перейти в базу знаний
-      </button>
+      <!-- Problem description (for problem flow) - hidden by default -->
+      <div class="form-group hidden" id="problem-group">
+        <label class="form-label">
+          Описание проблемы <span class="required">*</span>
+        </label>
+        <textarea class="form-textarea" placeholder="Опишите, что именно произошло: лицензия пропала, нужна на новом устройстве, больше не нужна, и т.д."></textarea>
+      </div>
+
+      <button class="submit-button" id="submit-button">Отправить</button>
     </div>
   </div>
-
-  <!-- Nav buttons OUTSIDE the modal, inside overlay -->
-  <!-- Next nav — RIGHT of modal -->
-  <button class="carousel-nav next" id="nextBtn" onclick="nextSlide()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
 </div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
-  const TEMPLATES = [
-    "Чтобы воспользоваться печатью, подойдите к принтеру и авторизуйтесь с помощью бейджа — приложите его к считывателю на корпусе устройства. Далее на экране принтера нажмите кнопку «Почта» и выберите нужные файлы из списка. После выбора нажмите кнопку «Принт» — документ начнёт печататься. Забрать распечатку можно сразу из лотка принтера.",
-    "Если вам необходим личный принтер на рабочем месте, вы можете оформить заявку через портал IT-оборудования. Перейдите в раздел «Заказ техники», выберите тип устройства «Принтер», укажите модель и обоснование потребности. Заявка будет рассмотрена в течение 3 рабочих дней. Доставка и подключение осуществляются силами IT-отдела.",
-    "Если офисный принтер неисправен, не включается или выдаёт ошибку, необходимо создать заявку на ремонт. Перейдите в Startrek, создайте тикет с типом «Оборудование — ремонт», укажите инвентарный номер принтера (наклейка на корпусе) и описание неисправности. Специалист свяжется с вами в течение рабочего дня.",
-  ];
+  // ===== State =====
+  const state = {
+    selectOpen: false,
+    selectedApp: null,
+    isProblemFlow: false,
+  };
 
-  const SLIDE_TAGS = [
-    ['Знание 1', 'Рекомендовано для этого пользователя'],
-    ['Знание 2', null],
-    ['Знание 3', null],
-    [null, null],
-  ];
-
-  let currentSlide = 0;
-  const totalSlides = 4;
-
-  function openModal(idx) {
-    currentSlide = idx || 0;
-    updateCarousel();
-    document.getElementById('modalOverlay').classList.add('open');
+  // ===== Toast =====
+  function showToast(message, duration = 2200) {
+    const t = document.getElementById('toast');
+    t.textContent = message;
+    t.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => t.classList.remove('show'), duration);
   }
 
-  function closeModal() {
-    document.getElementById('modalOverlay').classList.remove('open');
-  }
-
-  function handleOverlayClick(e) {
-    if (e.target === document.getElementById('modalOverlay')) closeModal();
-  }
-
-  function updateCarousel() {
-    const track = document.getElementById('carouselTrack');
-    track.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-    // dots
-    document.querySelectorAll('.carousel-dot').forEach((d, i) => {
-      d.classList.toggle('active', i === currentSlide);
+  // ===== OS pill selection =====
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
     });
+  });
 
-    // nav buttons
-    document.getElementById('prevBtn').disabled = currentSlide === 0;
-    document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+  // ===== Custom select =====
+  const trigger = document.getElementById('select-trigger');
+  const dropdown = document.getElementById('select-dropdown');
+  const label = document.getElementById('select-label');
+  const searchInput = document.getElementById('select-search-input');
 
-    // tags
-    const tags = SLIDE_TAGS[currentSlide];
-    const tagsEl = document.getElementById('modalTags');
-    if (currentSlide === totalSlides - 1) {
-      tagsEl.innerHTML = '';
-    } else {
-      tagsEl.innerHTML = tags.map((t, i) => t ? `<span class="modal-tag${i===1?' recommended':''}">${t}</span>` : '').join('');
-      // update knowledge number
-      const firstTag = tagsEl.querySelector('.modal-tag');
-      if (firstTag) firstTag.textContent = `Знание ${currentSlide + 1}`;
+  function openSelect() {
+    state.selectOpen = true;
+    trigger.classList.add('open');
+    dropdown.classList.add('open');
+    setTimeout(() => searchInput.focus(), 50);
+  }
+
+  function closeSelect() {
+    state.selectOpen = false;
+    trigger.classList.remove('open');
+    dropdown.classList.remove('open');
+    searchInput.value = '';
+    filterOptions('');
+  }
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.selectOpen ? closeSelect() : openSelect();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (state.selectOpen && !dropdown.contains(e.target) && e.target !== trigger) {
+      closeSelect();
     }
-
-    // footer
-    const isEmpty = currentSlide === totalSlides - 1;
-    document.getElementById('modalFooter').style.display = isEmpty ? 'none' : '';
-    document.getElementById('modalFooterEmpty').style.display = isEmpty ? '' : 'none';
-  }
-
-  function prevSlide() {
-    if (currentSlide > 0) { currentSlide--; updateCarousel(); }
-  }
-  function nextSlide() {
-    if (currentSlide < totalSlides - 1) { currentSlide++; updateCarousel(); }
-  }
-  function goToSlide(i) { currentSlide = i; updateCarousel(); }
-
-  function insertToChat() {
-    const text = TEMPLATES[currentSlide] || '';
-    document.getElementById('chatInput').value = text;
-    closeModal();
-    document.getElementById('chatInput').focus();
-  }
-
-  function openKB() {
-    closeModal();
-    switchTab('kb');
-    // show loading then content
-    document.getElementById('kbLoading').style.display = 'flex';
-    document.getElementById('kbContent').style.display = 'none';
-    setTimeout(() => {
-      document.getElementById('kbLoading').style.display = 'none';
-      document.getElementById('kbContent').style.display = 'block';
-    }, 900);
-  }
-
-  function applyTemplate() {
-    document.getElementById('chatInput').value = TEMPLATES[0];
-    document.getElementById('chatInput').focus();
-  }
-
-  function switchTab(tab) {
-    document.getElementById('tabCRM').classList.toggle('active', tab === 'crm');
-    document.getElementById('tabKB').classList.toggle('active', tab === 'kb');
-    document.getElementById('panelCRM').style.display = tab === 'crm' ? '' : 'none';
-    document.getElementById('panelKB').style.display = tab === 'kb' ? '' : 'none';
-  }
-
-  function toggleSection(header) {
-    const chevron = header.querySelector('.crm-section-chevron');
-    chevron.classList.toggle('open');
-  }
-
-  // Close suggestions panel
-  document.getElementById('closeSuggestions').addEventListener('click', () => {
-    document.getElementById('suggestionsPanel').style.display = 'none';
   });
 
-  // Keyboard nav for modal
-  document.addEventListener('keydown', e => {
-    if (!document.getElementById('modalOverlay').classList.contains('open')) return;
-    if (e.key === 'ArrowRight') nextSlide();
-    if (e.key === 'ArrowLeft') prevSlide();
-    if (e.key === 'Escape') closeModal();
+  // Filter options on search; problem option is always visible (pinned)
+  function filterOptions(query) {
+    const q = query.toLowerCase().trim();
+    document.querySelectorAll('.select-option').forEach(opt => {
+      // Problem option is always visible, regardless of search
+      if (opt.dataset.special === 'true') {
+        opt.style.display = '';
+        return;
+      }
+      const text = opt.textContent.toLowerCase();
+      opt.style.display = text.includes(q) ? '' : 'none';
+    });
+  }
+
+  searchInput.addEventListener('input', (e) => {
+    filterOptions(e.target.value);
   });
 
-  // Auto-resize textarea
-  const ta = document.getElementById('chatInput');
-  ta.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = Math.min(this.scrollHeight, 80) + 'px';
+  // Option click
+  document.querySelectorAll('.select-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const value = opt.dataset.value;
+      const isSpecial = opt.dataset.special === 'true';
+      label.textContent = value;
+      trigger.classList.add('has-value');
+      state.selectedApp = value;
+      state.isProblemFlow = isSpecial;
+
+      switchFormMode(isSpecial);
+      closeSelect();
+    });
+  });
+
+  // ===== Form mode switching =====
+  function switchFormMode(isProblem) {
+    const justification = document.getElementById('justification-group');
+    const problem = document.getElementById('problem-group');
+    const fieldForLabel = document.getElementById('field-for-label');
+    const submitButton = document.getElementById('submit-button');
+    const appsHint = document.getElementById('apps-hint');
+
+    if (isProblem) {
+      justification.classList.add('hidden');
+      problem.classList.remove('hidden');
+      fieldForLabel.innerHTML = 'Кому нужна помощь <span class="required">*</span>';
+      submitButton.textContent = 'Отправить запрос';
+      appsHint.style.display = 'none';
+    } else {
+      justification.classList.remove('hidden');
+      problem.classList.add('hidden');
+      fieldForLabel.innerHTML = 'Заказать новое ПО для <span class="required">*</span>';
+      submitButton.textContent = 'Отправить';
+      appsHint.style.display = '';
+    }
+  }
+
+  // ===== Hint link: open dropdown and highlight problem option =====
+  document.getElementById('problem-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    openSelect();
+    const problemOpt = document.querySelector('.problem-option');
+    if (problemOpt) {
+      problemOpt.style.background = 'var(--bg-pill)';
+      setTimeout(() => { problemOpt.style.background = ''; }, 1500);
+    }
+  });
+
+  // ===== Submit =====
+  document.getElementById('submit-button').addEventListener('click', () => {
+    if (state.isProblemFlow) {
+      showToast('Запрос направлен в поддержку — оператор скоро ответит');
+    } else {
+      showToast('Заявка на ПО отправлена');
+    }
+  });
+
+  // ===== Close modal =====
+  document.querySelector('.modal-close').addEventListener('click', () => {
+    showToast('В прототипе модалка не закрывается');
+  });
+
+  // ===== Add self =====
+  document.querySelector('.add-self-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    const input = document.querySelector('.form-input');
+    input.value = 'kivich@';
   });
 </script>
+
 </body>
 </html>
