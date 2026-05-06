@@ -467,11 +467,6 @@
 
     <!-- Right column / form -->
     <div class="modal-right">
-      <!-- Alert block -->
-      <div class="form-alert">
-        Это форма заказа нового ПО. Если лицензия уже была, но слетела, нужна на новом устройстве или есть другой вопрос — <a href="#" id="alert-link">Пиши в Хелпи</a>.
-      </div>
-
       <!-- "For whom" field -->
       <div class="form-group">
         <label class="form-label" id="field-for-label">
@@ -508,9 +503,9 @@
               <input type="text" placeholder="Найти [object]" id="select-search-input" />
             </div>
             <div class="select-options" id="select-options">
-              <!-- Special problem option always pinned at top -->
-              <div class="select-option problem-option" data-value="Проблемы с выданной лицензией" data-special="true">
-                Проблемы с выданной лицензией
+              <!-- Special help option always pinned at top -->
+              <div class="select-option problem-option" data-value="Помощь с лицензиями" data-special="true">
+                Помощь с лицензиями
               </div>
               <div class="select-option" data-value="Google workspace">Google workspace</div>
               <div class="select-option" data-value="Miro">Miro</div>
@@ -669,17 +664,6 @@
 
   // ===== Hint link: open dropdown and highlight problem option =====
   document.getElementById('problem-link').addEventListener('click', (e) => {
-    e.preventDefault();
-    openSelect();
-    const problemOpt = document.querySelector('.problem-option');
-    if (problemOpt) {
-      problemOpt.style.background = 'var(--bg-pill)';
-      setTimeout(() => { problemOpt.style.background = ''; }, 1500);
-    }
-  });
-
-  // ===== Alert link: same behavior as hint link =====
-  document.getElementById('alert-link').addEventListener('click', (e) => {
     e.preventDefault();
     openSelect();
     const problemOpt = document.querySelector('.problem-option');
