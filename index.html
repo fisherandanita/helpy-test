@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Helpy — Заказ ПО (прототип)</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helpy — прототип поиска</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,683 +15,1907 @@
   }
 
   :root {
-    --bg-card: #ffffff;
-    --bg-modal-left: #f0f0ee;
-    --bg-input: #ffffff;
-    --bg-pill: #f0f0ee;
-    --bg-pill-active: #ffffff;
-    --bg-button-dark: #1a1a1a;
-    --text-primary: #1a1a1a;
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --text: #0f0f0f;
     --text-secondary: #6b6b6b;
-    --text-tertiary: #8a8a8a;
-    --text-link: #2b8cff;
-    --text-required: #ff4444;
-    --border-subtle: #e5e5e3;
-    --border-input: #d9d9d9;
-    --accent-teal: #00a88e;
-    --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.08);
-    --radius-modal: 16px;
-    --radius-input: 10px;
-    --radius-pill: 10px;
-    --radius-button: 10px;
+    --text-tertiary: #a0a0a0;
+    --border: #ececec;
+    --border-hover: #dcdcdc;
+    --accent: #00d4a8;
+    --accent-light: #4ee5c4;
+    --accent-dark: #00b893;
+    --accent-soft: #00d4a81a;
+    --hover: #f7f7f7;
+    --kbd-bg: #f0f0f0;
+    --shadow-search: 0 0 0 4px #00d4a833;
   }
 
   html, body {
+    height: 100%;
+    background: var(--bg);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: var(--text-primary);
-    min-height: 100vh;
-    font-size: 14px;
-    line-height: 1.5;
+    color: var(--text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Background: real Helpy screenshot, dimmed */
   body {
-    background-color: #1a1a1a;
-    background-image: url('helpy-bg.jpg');
-    background-size: cover;
-    background-position: top center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    overflow-x: hidden;
   }
 
-  /* Dimming overlay over the background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  /* Modal container — centered */
-  .modal-wrapper {
-    position: relative;
-    z-index: 10;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 24px;
-  }
-
-  .modal {
-    background: var(--bg-card);
-    border-radius: var(--radius-modal);
-    width: 100%;
-    max-width: 1024px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    position: relative;
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
-    overflow: visible;
-  }
-
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    right: -52px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: white;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-size: 14px;
-    color: #1a1a1a;
-  }
-
-  .modal-left {
-    background: var(--bg-modal-left);
-    padding: 32px;
-    border-radius: var(--radius-modal) 0 0 var(--radius-modal);
-  }
-
-  .modal-left h2 {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 20px;
-    letter-spacing: -0.01em;
-  }
-
-  .modal-left p {
-    font-size: 13px;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-    line-height: 1.5;
-  }
-
-  .modal-left h4 {
-    font-size: 15px;
-    font-weight: 600;
-    margin-top: 20px;
-    margin-bottom: 10px;
-  }
-
-  .modal-right {
-    padding: 32px;
-    position: relative;
-  }
-
-  .form-group {
-    margin-bottom: 24px;
-  }
-
-  .form-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-  }
-
-  .form-label .required {
-    color: var(--text-required);
-    margin-left: 2px;
-  }
-
-  .form-input {
-    width: 100%;
-    height: 48px;
-    padding: 0 16px;
-    border: 1px solid var(--border-input);
-    border-radius: var(--radius-input);
-    font-family: inherit;
-    font-size: 14px;
-    background: var(--bg-input);
-    color: var(--text-primary);
-    transition: border-color 0.15s;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: var(--text-primary);
-  }
-
-  .form-input::placeholder {
-    color: var(--text-tertiary);
-  }
-
-  .add-self-link {
-    display: block;
-    text-align: right;
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-  .add-self-link:hover {
-    color: var(--text-primary);
-  }
-
-  /* Pill group (OS selector) */
-  .pill-group {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    background: var(--bg-pill);
-    border-radius: var(--radius-pill);
-    padding: 4px;
-  }
-
-  .pill {
-    height: 40px;
-    border: none;
-    background: transparent;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.15s;
-    color: var(--text-primary);
-  }
-
-  .pill.active {
-    background: var(--bg-pill-active);
-    box-shadow: var(--shadow-pill);
-    font-weight: 500;
-  }
-
-  /* Custom select */
-  .select-wrapper {
-    position: relative;
-  }
-
-  .select-trigger {
-    width: 100%;
-    height: 48px;
-    padding: 0 16px;
-    border: 1px solid var(--border-input);
-    border-radius: var(--radius-input);
-    background: var(--bg-input);
-    font-family: inherit;
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
+  /* === Header === */
+  .header {
+    background: var(--surface);
+    padding: 16px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: var(--text-tertiary);
-    transition: border-color 0.15s;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 5;
   }
 
-  .select-trigger.has-value {
-    color: var(--text-primary);
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
-  .select-trigger:hover {
-    border-color: #b0b0b0;
+  .apps-grid {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 3px;
+    padding: 6px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s;
   }
 
-  .select-trigger.open {
-    border-color: var(--text-primary);
+  .apps-grid:hover {
+    background: var(--hover);
   }
 
-  .select-chevron {
+  .apps-grid span {
+    background: #2a2a2a;
+    border-radius: 1px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .logo-mark::before {
+    content: '';
     width: 16px;
     height: 16px;
-    transition: transform 0.2s;
+    border: 3px solid white;
+    border-radius: 50%;
+    border-top-color: transparent;
+    transform: rotate(45deg);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s;
+    color: var(--text-secondary);
+  }
+
+  .icon-btn:hover {
+    background: #e6e6e6;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #c4a572, #6b4f3a);
+    cursor: pointer;
+  }
+
+  /* === Main layout === */
+  .main {
+    padding: 24px 32px;
+    position: relative;
+  }
+
+  .search-row {
+    position: relative;
+    z-index: 10;
+    margin-bottom: 24px;
+  }
+
+  .search-overlay {
+    position: relative;
+    z-index: 12;
+  }
+
+  .search-overlay.focused {
+    position: absolute;
+    top: -12px;
+    left: -12px;
+    right: -12px;
+    background: var(--surface);
+    padding: 12px;
+    border-radius: 20px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  }
+
+  .search-top {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .search-wrapper {
+    flex: 1;
+    position: relative;
+  }
+
+  .search-bar {
+    width: 100%;
+    height: 56px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px 0 16px;
+    gap: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: text;
+  }
+
+  .search-bar.focused {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-search);
+  }
+
+  .search-icon {
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    background: transparent;
+    color: var(--text);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .ai-mode-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f5f5f5;
+    border: 1px solid #e8e8e8;
+    cursor: pointer;
+    padding: 6px 6px 6px 14px;
+    border-radius: 100px;
+    transition: border-color 0.2s, background 0.2s;
+    flex-shrink: 0;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .ai-mode-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 25%,
+      rgba(0, 212, 168, 0.18) 45%,
+      rgba(78, 229, 196, 0.28) 50%,
+      rgba(0, 212, 168, 0.18) 55%,
+      transparent 75%
+    );
+    background-size: 250% 100%;
+    background-position: 200% 0;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .ai-mode-btn:hover {
+    border-color: var(--accent);
+    background: white;
+  }
+
+  .ai-mode-btn:hover::before {
+    opacity: 1;
+    animation: shimmer 1.6s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -100% 0; }
+  }
+
+  .ai-mode-btn span {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    position: relative;
+    z-index: 1;
+  }
+
+  .ai-mode-circle {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: transform 0.2s, background 0.2s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ai-mode-btn:hover .ai-mode-circle {
+    transform: translateX(2px);
+    background: var(--accent-dark);
+  }
+
+  .filter-btn {
+    height: 56px;
+    padding: 0 20px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    transition: border-color 0.15s, background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--border-hover);
+  }
+
+  /* === Suggestions === */
+  .suggestions {
+    margin-top: 8px;
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 12px 8px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .suggestions.visible {
+    display: block;
+    opacity: 1;
+  }
+
+  /* Skeleton loader */
+  .suggestions-skeleton {
+    display: none;
+    padding: 4px 8px;
+  }
+
+  .suggestions-skeleton.visible {
+    display: block;
+  }
+
+  .skeleton-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 8px;
+  }
+
+  .skeleton-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: linear-gradient(
+      90deg,
+      #ececec 0%,
+      #f5f5f5 50%,
+      #ececec 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+
+  .skeleton-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .skeleton-line {
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(
+      90deg,
+      #ececec 0%,
+      #f5f5f5 50%,
+      #ececec 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  }
+
+  .skeleton-line.w-60 { width: 60%; }
+  .skeleton-line.w-45 { width: 45%; }
+  .skeleton-line.w-75 { width: 75%; }
+  .skeleton-line.w-50 { width: 50%; }
+  .skeleton-line.w-40 { width: 40%; }
+  .skeleton-line.short { height: 10px; }
+
+  /* Stagger animation */
+  .skeleton-item:nth-child(1) .skeleton-circle,
+  .skeleton-item:nth-child(1) .skeleton-line { animation-delay: 0s; }
+  .skeleton-item:nth-child(2) .skeleton-circle,
+  .skeleton-item:nth-child(2) .skeleton-line { animation-delay: 0.1s; }
+  .skeleton-item:nth-child(3) .skeleton-circle,
+  .skeleton-item:nth-child(3) .skeleton-line { animation-delay: 0.2s; }
+  .skeleton-item:nth-child(4) .skeleton-circle,
+  .skeleton-item:nth-child(4) .skeleton-line { animation-delay: 0.3s; }
+
+  @keyframes skeleton-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+
+  .suggestion-item:hover,
+  .suggestion-item.active {
+    background: var(--hover);
+  }
+
+  .suggestion-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--text-secondary);
     flex-shrink: 0;
   }
 
-  .select-trigger.open .select-chevron {
-    transform: rotate(180deg);
-  }
-
-  .select-dropdown {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid var(--border-input);
-    border-radius: var(--radius-input);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-    z-index: 50;
-    max-height: 320px;
-    overflow: hidden;
-    display: none;
-    flex-direction: column;
-  }
-
-  .select-dropdown.open {
-    display: flex;
-  }
-
-  .select-search {
-    padding: 10px;
-    border-bottom: 1px solid var(--border-subtle);
-    flex-shrink: 0;
-  }
-
-  .select-search input {
-    width: 100%;
-    height: 36px;
-    padding: 0 12px 0 36px;
-    border: none;
-    background: var(--bg-pill);
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 13px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>");
-    background-repeat: no-repeat;
-    background-position: 12px center;
-  }
-
-  .select-search input:focus {
-    outline: none;
-  }
-
-  .select-options {
-    overflow-y: auto;
+  .suggestion-content {
+    min-width: 0;
     flex: 1;
   }
 
-  .select-option {
-    padding: 12px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.1s;
-    color: var(--text-primary);
+  .suggestion-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 2px;
   }
 
-  .select-option:hover {
-    background: var(--bg-pill);
-  }
-
-  .form-textarea {
-    width: 100%;
-    min-height: 96px;
-    padding: 12px 16px;
-    border: 1px solid var(--border-input);
-    border-radius: var(--radius-input);
-    font-family: inherit;
-    font-size: 14px;
-    background: var(--bg-input);
-    color: var(--text-primary);
-    resize: vertical;
-    transition: border-color 0.15s;
-  }
-
-  .form-textarea:focus {
-    outline: none;
-    border-color: var(--text-primary);
-  }
-
-  .form-textarea::placeholder {
+  .suggestion-title .dot {
     color: var(--text-tertiary);
+    font-weight: 400;
   }
 
-  .field-hint {
+  .suggestion-title .meta {
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .suggestion-path {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .suggestions-footer {
+    border-top: 1px solid var(--border);
     margin-top: 8px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 13px;
     color: var(--text-secondary);
-    text-align: right;
   }
 
-  .field-hint a {
-    color: var(--text-link);
-    text-decoration: none;
+  .footer-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
-  .field-hint a:hover {
-    text-decoration: underline;
+  .footer-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
 
-  .submit-button {
-    background: var(--bg-button-dark);
-    color: white;
-    border: none;
-    padding: 14px 28px;
-    border-radius: var(--radius-button);
+  .kbd {
+    background: var(--kbd-bg);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    min-width: 26px;
+    text-align: center;
+  }
+
+  /* === Body content === */
+  .body-content {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    transition: opacity 0.25s ease;
+  }
+
+  .body-content.dimmed {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* === Sidebar === */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+    transition: background 0.12s;
+  }
+
+  .sidebar-item:hover {
+    background: #ededed;
+  }
+
+  .sidebar-item .chev {
+    color: var(--text-tertiary);
+    margin-right: -4px;
+  }
+
+  .sidebar-item .ico {
+    color: var(--text-secondary);
+    display: flex;
+  }
+
+  /* === Catalog hero === */
+  .catalog-hero {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 40px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 16px;
+    min-height: 220px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .catalog-hero h1 {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .catalog-hero p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: auto;
+  }
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-image-placeholder {
+    background: #fafafa;
+    border-radius: 12px;
+    border: 1px dashed #e0e0e0;
+  }
+
+  /* === Cards grid === */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  /* === Responsive === */
+  @media (max-width: 1100px) {
+    .cards-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .body-content {
+      grid-template-columns: 1fr;
+    }
+    .sidebar {
+      display: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .header {
+      padding: 14px 16px;
+    }
+    .main {
+      padding: 20px 16px;
+    }
+    .search-row {
+      margin: -10px -10px 12px -10px;
+      padding: 10px;
+    }
+    .search-top {
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      width: 100%;
+    }
+    .cards-grid {
+      grid-template-columns: 1fr;
+    }
+    .catalog-hero {
+      grid-template-columns: 1fr;
+      padding: 28px;
+    }
+    .catalog-hero h1 {
+      font-size: 32px;
+    }
+    .hero-image-placeholder {
+      min-height: 140px;
+    }
+    .ai-mode-btn span {
+      display: none;
+    }
+    .ai-mode-btn {
+      padding: 6px;
+    }
+    .floating-widgets {
+      left: 16px;
+      right: 16px;
+    }
+    .sidebar-collapse {
+      display: none;
+    }
+    .chip-btn {
+      padding: 0 14px;
+      height: 40px;
+      font-size: 13px;
+    }
+    .footer-group {
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .suggestions-footer {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+  }
+
+  .category-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .category-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .card-header h3 {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .card-header .arrow {
+    color: var(--text-secondary);
+  }
+
+  .category-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+
+  /* === Floating widgets === */
+  .floating-widgets {
+    position: fixed;
+    bottom: 20px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 4;
+  }
+
+  .sidebar-collapse {
+    width: 200px;
+    height: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    color: var(--text-secondary);
+  }
+
+  .right-widgets {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+  }
+
+  .chip-btn {
+    height: 44px;
+    padding: 0 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;
+    color: var(--text);
+    transition: transform 0.15s, border-color 0.15s;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  }
+
+  .chip-btn:hover {
+    transform: translateY(-1px);
+    border-color: var(--border-hover);
+  }
+
+  .chip-btn .chip-icon-tg {
+    color: #229ED9;
+  }
+
+  .chip-btn .chip-icon-ai {
+    color: var(--accent);
+  }
+
+  .settings-fab {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: opacity 0.15s;
+    color: var(--text-secondary);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
   }
 
-  .submit-button:hover {
-    opacity: 0.9;
-  }
-
-  /* Toast notification */
-  .toast {
+  /* === Backdrop === */
+  .backdrop {
     position: fixed;
-    bottom: 32px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--bg-button-dark);
-    color: white;
-    padding: 14px 24px;
-    border-radius: 12px;
-    font-size: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    opacity: 0;
+    inset: 0;
+    background: rgba(0, 0, 0, 0);
     pointer-events: none;
-    transition: opacity 0.25s, transform 0.25s;
-    z-index: 300;
-    max-width: 90vw;
+    transition: background 0.25s ease;
+    z-index: 8;
   }
 
-  .toast.show {
-    opacity: 1;
+  .backdrop.visible {
+    background: rgba(20, 20, 20, 0.32);
+    pointer-events: auto;
+  }
+
+  /* === AI Mode Screen === */
+  .ai-screen {
+    display: none;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    padding: 0;
+    min-height: calc(100vh - 200px);
+  }
+
+  .ai-screen.active {
+    display: grid;
+  }
+
+  .home-screen.hidden {
+    display: none;
+  }
+
+  .ai-main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ai-conversation {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 220px;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .back-btn {
+    align-self: flex-start;
+    height: 40px;
+    padding: 0 16px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 100px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    transition: background 0.15s;
+    margin-bottom: 32px;
+  }
+
+  .back-btn:hover {
+    background: #e6e6e6;
+  }
+
+  .ai-conversation {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 220px;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .user-message {
+    align-self: flex-end;
+    background: #ededed;
+    padding: 16px 20px;
+    border-radius: 18px;
+    max-width: 80%;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .ai-message {
+    align-self: flex-start;
+    width: 100%;
+  }
+
+  .ai-message-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .ai-avatar {
+    width: 28px;
+    height: 28px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .ai-avatar::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    width: 7px;
+    height: 7px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  .ai-message-body {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+  }
+
+  .ai-message-body p {
+    margin-bottom: 14px;
+  }
+
+  .ai-message-body ol {
+    padding-left: 24px;
+    margin-bottom: 14px;
+  }
+
+  .ai-message-body ol li {
+    margin-bottom: 12px;
+    padding-left: 6px;
+  }
+
+  .ai-message-body ol li strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .ai-message-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 16px;
+  }
+
+  .action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .action-btn:hover {
+    background: var(--hover);
+    color: var(--text);
+  }
+
+  .sources-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px 4px 4px;
+    background: transparent;
+    border: none;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-left: 4px;
+  }
+
+  .sources-pill:hover {
+    background: var(--hover);
+  }
+
+  .sources-stack {
+    display: flex;
+    align-items: center;
+  }
+
+  .sources-stack .src-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: -6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .sources-stack .src-icon:first-child {
+    margin-left: 0;
+  }
+
+  .sources-stack .src-1 { background: #4285F4; color: white; }
+  .sources-stack .src-2 { background: var(--accent); color: white; }
+  .sources-stack .src-3 { background: #FF6B35; color: white; }
+
+  /* AI input dock */
+  .ai-input-dock {
+    position: fixed;
+    bottom: 24px;
+    left: 32px;
+    right: calc(380px + 32px + 32px);
+    max-width: 760px;
+    margin: 0 auto;
+    z-index: 50;
+  }
+
+  .ai-input-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 18px 22px 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  }
+
+  .ai-input-textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    resize: none;
+    background: transparent;
+    line-height: 1.5;
+    min-height: 24px;
+    max-height: 120px;
+    margin-bottom: 14px;
+  }
+
+  .ai-input-textarea::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .ai-input-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .ai-input-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tool-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .tool-pill:hover {
+    border-color: var(--border-hover);
+    background: var(--hover);
+  }
+
+  .tool-pill svg {
+    color: var(--text-secondary);
+  }
+
+  .send-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .send-btn.has-text {
+    background: var(--accent);
+    color: white;
+  }
+
+  .send-btn.has-text:hover {
+    background: var(--accent-dark);
+  }
+
+  .ai-disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: 12px;
+  }
+
+  /* AI right column — search results */
+  .ai-results {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px 16px;
+    align-self: flex-start;
+    border: 1px solid var(--border);
+  }
+
+  .ai-results-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding: 0 8px;
+    color: var(--text);
+  }
+
+  .ai-results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .ai-result-item {
+    display: flex;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+
+  .ai-result-item:hover {
+    background: var(--hover);
+  }
+
+  .ai-result-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .ai-result-content {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .ai-result-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.35;
+  }
+
+  .ai-result-title .meta {
+    color: var(--text-secondary);
+    font-weight: 400;
+  }
+
+  .ai-result-title .dot {
+    color: var(--text-tertiary);
+    margin: 0 4px;
+  }
+
+  .ai-result-path {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Thinking dots */
+  .ai-thinking {
+    display: flex;
+    gap: 5px;
+    padding: 4px 0;
+  }
+
+  .ai-thinking span {
+    width: 8px;
+    height: 8px;
+    background: #1a1a1a;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+  }
+
+  .ai-thinking span:nth-child(1) { animation-delay: -0.32s; }
+  .ai-thinking span:nth-child(2) { animation-delay: -0.16s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  /* Hint chip */
+  .hint-chip {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-60px);
+    background: #1a1a1a;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 100;
+    transition: transform 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .hint-chip.visible {
     transform: translateX(-50%) translateY(0);
   }
 
-  /* Helper for hidden state */
-  .hidden {
-    display: none !important;
+  .hint-chip kbd {
+    background: rgba(255,255,255,0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    margin: 0 2px;
+  }
+  /* === AI Screen responsive overrides (must come after base .ai-screen) === */
+  @media (max-width: 1100px) {
+    .ai-screen {
+      grid-template-columns: 1fr 320px;
+      gap: 24px;
+    }
+    .ai-input-dock {
+      right: calc(320px + 24px + 32px);
+    }
   }
 
-  /* Alert block at top of form */
-  .form-alert {
-    background: #eaf3fe;
-    border-radius: var(--radius-input);
-    padding: 16px 18px;
-    margin-bottom: 24px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--text-primary);
+  @media (max-width: 900px) {
+    .ai-screen {
+      grid-template-columns: 1fr;
+    }
+    .ai-results {
+      display: none;
+    }
+    .ai-input-dock {
+      right: 32px;
+    }
   }
 
-  .form-alert a {
-    color: var(--text-link);
-    text-decoration: none;
-  }
-
-  .form-alert a:hover {
-    text-decoration: underline;
+  @media (max-width: 720px) {
+    .ai-screen {
+      gap: 0;
+    }
+    .ai-input-dock {
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+    }
+    .ai-input-card {
+      padding: 14px 16px 12px;
+    }
+    .ai-conversation {
+      padding-bottom: 280px;
+    }
+    .back-btn {
+      margin-bottom: 24px;
+    }
+    .ai-message-body code {
+      word-break: break-all;
+    }
+    .hint-chip {
+      display: none;
+    }
   }
 </style>
 </head>
 <body>
 
-<!-- Modal centered over dimmed Helpy screenshot -->
-<div class="modal-wrapper">
-  <div class="modal" id="modal">
-    <button class="modal-close" aria-label="Close">✕</button>
+<div class="hint-chip" id="hint">Нажмите на поиск или клавишу <kbd>/</kbd> чтобы начать</div>
 
-    <!-- Left column -->
-    <div class="modal-left">
-      <h2>Заказ нового ПО</h2>
-      <p>Вы можете заказать программное обеспечение в следующих случаях:</p>
-      <p>— отсутствует необходимое ПО,</p>
-      <p>— требуется обновление программного обеспечения согласно регламенту,</p>
-      <p>— необходимо установить новую версию операционной системы (Windows, macOS, Linux).</p>
-      <p style="margin-top: 12px;">Также доступен запрос ПО для специализированных задач:</p>
-      <p>— организация онлайн-мероприятий,</p>
-      <p>— проведение видеоконференций,</p>
-      <p>— выполнение учебных тестов.</p>
-      <p style="margin-top: 12px;">Программное обеспечение предоставляется как постоянным, так и временным сотрудникам, а также стажёрам.</p>
+<div class="backdrop" id="backdrop"></div>
 
-      <h4>Согласование</h4>
-      <p>Необходимо в следующих случаях:</p>
-      <p>— требуется установка ПО вне установленного регламента,</p>
-      <p>— запрашиваемая версия не соответствует должностным обязанностям сотрудника,</p>
-      <p>— ПО запрашивается для внешнего консультанта или представителя подрядчика.</p>
-      <p style="margin-top: 8px;">Если согласование происходило в рамках другого запроса, укажите его номер в комментариях к заявке.</p>
-
-      <h4>Результат</h4>
-      <p>Программное обеспечение с выбранной конфигурацией.</p>
+<!-- Header -->
+<header class="header">
+  <div class="header-left">
+    <div class="apps-grid">
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
     </div>
+    <div class="logo">
+      <div class="logo-mark"></div>
+      Helpy
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" aria-label="Theme">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <button class="icon-btn" aria-label="Notifications">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    </button>
+    <div class="avatar"></div>
+  </div>
+</header>
 
-    <!-- Right column / form -->
-    <div class="modal-right">
-      <!-- "For whom" field -->
-      <div class="form-group">
-        <label class="form-label" id="field-for-label">
-          Заказать новое ПО для <span class="required">*</span>
-        </label>
-        <input type="text" class="form-input" placeholder="login@" />
-        <a href="#" class="add-self-link">Добавить себя</a>
+<!-- Main -->
+<main class="main">
+  <div class="search-row">
+    <div class="search-overlay" id="searchOverlay">
+      <div class="search-top">
+        <div class="search-wrapper">
+          <div class="search-bar" id="searchBar">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" class="search-input" id="searchInput" placeholder="Найти [object]" autocomplete="off">
+            <button class="ai-mode-btn" id="aiModeBtn" type="button">
+              <span>Режим ИИ</span>
+              <div class="ai-mode-circle">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <button class="filter-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          <span>Фильтр по сотруднику</span>
+        </button>
       </div>
 
-      <!-- OS field -->
-      <div class="form-group">
-        <label class="form-label">
-          Ваша операционная система <span class="required">*</span>
-        </label>
-        <div class="pill-group">
-          <button class="pill active" data-os="windows">Windows</button>
-          <button class="pill" data-os="macos">MacOS</button>
-          <button class="pill" data-os="linux">Linux</button>
+      <!-- Suggestions skeleton (loading) -->
+      <div class="suggestions suggestions-skeleton" id="suggestionsSkeleton">
+        <div class="skeleton-item">
+          <div class="skeleton-circle"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-60"></div>
+            <div class="skeleton-line w-75 short"></div>
+          </div>
+        </div>
+        <div class="skeleton-item">
+          <div class="skeleton-circle"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-45"></div>
+            <div class="skeleton-line w-50 short"></div>
+          </div>
+        </div>
+        <div class="skeleton-item">
+          <div class="skeleton-circle"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-60"></div>
+            <div class="skeleton-line w-40 short"></div>
+          </div>
+        </div>
+        <div class="skeleton-item">
+          <div class="skeleton-circle"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line w-45"></div>
+            <div class="skeleton-line w-50 short"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Apps field with custom select -->
-      <div class="form-group">
-        <label class="form-label">
-          Необходимые приложения <span class="required">*</span>
-        </label>
-        <div class="select-wrapper">
-          <button class="select-trigger" id="select-trigger">
-            <span id="select-label">Приложения</span>
-            <svg class="select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-          <div class="select-dropdown" id="select-dropdown">
-            <div class="select-search">
-              <input type="text" placeholder="Найти [object]" id="select-search-input" />
+      <!-- Suggestions -->
+      <div class="suggestions" id="suggestions">
+        <div class="suggestion-item active" data-title="Подключение к VPN на личных компьютерах">
+          <div class="suggestion-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </div>
+          <div class="suggestion-content">
+            <div class="suggestion-title">
+              <span>Подключение к VPN на личных компьютерах</span>
+              <span class="dot">•</span>
+              <span class="meta">Wiki</span>
             </div>
-            <div class="select-options" id="select-options">
-              <!-- Special help option always pinned at top -->
-              <div class="select-option problem-option" data-value="Помощь с лицензиями" data-special="true">
-                Помощь с лицензиями
-              </div>
-              <div class="select-option" data-value="Google workspace">Google workspace</div>
-              <div class="select-option" data-value="Miro">Miro</div>
-              <div class="select-option" data-value="Figma">Figma</div>
-              <div class="select-option" data-value="Cursor">Cursor</div>
-              <div class="select-option" data-value="Charles">Charles</div>
-              <div class="select-option" data-value="Photoshop">Photoshop</div>
-              <div class="select-option" data-value="Sketch">Sketch</div>
-              <div class="select-option" data-value="Slack">Slack</div>
-              <div class="select-option" data-value="Notion">Notion</div>
-              <div class="select-option" data-value="Zoom">Zoom</div>
+            <div class="suggestion-path">https://wiki.yandex-team.ru/itproduct/design/navigacija-po-fajjlam-produktov-helpy/</div>
+          </div>
+        </div>
+        <div class="suggestion-item" data-title="VPN-токен">
+          <div class="suggestion-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="suggestion-content">
+            <div class="suggestion-title">
+              <span>VPN-токен</span>
+              <span class="dot">•</span>
+              <span class="meta">Форма заявки</span>
+            </div>
+            <div class="suggestion-path">IT &nbsp;&gt;&nbsp; Внешние подключения &nbsp;&gt;&nbsp; ... &nbsp;&gt;&nbsp; VPN</div>
+          </div>
+        </div>
+        <div class="suggestion-item" data-title="Подключение к VPN на личных смартфонах">
+          <div class="suggestion-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="suggestion-content">
+            <div class="suggestion-title">
+              <span>Подключение к VPN на личных смартфонах</span>
+              <span class="dot">•</span>
+              <span class="meta">Инструкция</span>
+            </div>
+            <div class="suggestion-path">IT &nbsp;&gt;&nbsp; Внешние подключения &nbsp;&gt;&nbsp; ... &nbsp;&gt;&nbsp; VPN</div>
+          </div>
+        </div>
+        <div class="suggestion-item" data-title="VPN">
+          <div class="suggestion-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="suggestion-content">
+            <div class="suggestion-title">
+              <span>VPN</span>
+              <span class="dot">•</span>
+              <span class="meta">Папка с материалами</span>
+            </div>
+            <div class="suggestion-path">IT &nbsp;&gt;&nbsp; Внешние подключения</div>
+          </div>
+        </div>
+
+        <div class="suggestions-footer">
+          <div class="footer-group">
+            <div class="footer-shortcut">
+              <span class="kbd">↓</span>
+              <span class="kbd">↑</span>
+              <span>Переместить</span>
+            </div>
+            <div class="footer-shortcut">
+              <span class="kbd">⌘+Shift+F</span>
+              <span>Поиск</span>
+            </div>
+            <div class="footer-shortcut">
+              <span class="kbd">Enter</span>
+              <span>Спросить ИИ</span>
+            </div>
+          </div>
+          <div class="footer-shortcut">
+            <span class="kbd">Esc</span>
+            <span>Закрыть</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-screen" id="homeScreen">
+  <div class="body-content" id="bodyContent">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-item">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+        Все категории
+      </div>
+      <div class="sidebar-item">
+        <span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+        Избранное
+      </div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Финансы</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Ревью</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Адаптация</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Культура</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Обучение</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Карьерный рост</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Транспорт</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Бонусы</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Командировка</div>
+      <div class="sidebar-item"><span class="chev">›</span><span class="ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>Инновации</div>
+    </aside>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="catalog-hero">
+        <div class="hero-text">
+          <h1>Каталог</h1>
+          <p>Здесь вся информация, которая есть у наших хелпиков</p>
+        </div>
+        <div class="hero-image-placeholder"></div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="category-card">
+          <div class="card-header"><h3>Льготы</h3><span class="arrow">→</span></div>
+          <p>Зарплатные карты/ДМС/Страхование выезжающих за рубеж/ОМС/Стоматолог</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Финансы</h3><span class="arrow">→</span></div>
+          <p>Финансовый кабинет/Опционы/Заработная плата</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Ревью</h3><span class="arrow">→</span></div>
+          <p>Все о графике проведения ревью, системе оценивания и премирования</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Адаптация</h3><span class="arrow">→</span></div>
+          <p>Оформление корпоративных сим-карт</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Культура</h3><span class="arrow">→</span></div>
+          <p>Мероприятия и события, формирующие нашу корпоративную культуру</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Рабочее пространство</h3><span class="arrow">→</span></div>
+          <p>Удобные офисные кресла/Настольные лампы/Принадлежности для офиса/Кофе и закуски</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Карьерный рост</h3><span class="arrow">→</span></div>
+          <p>Профессиональное обучение/Семинары по развитию карьеры/Коучинг/Менторство</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Транспорт</h3><span class="arrow">→</span></div>
+          <p>Компенсация проезда/Оплата парковки/Парковочные места/Трансферы</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Бонусы</h3><span class="arrow">→</span></div>
+          <p>Годовые премиии/Подарочные сертификаты/Награды за достижения/Участие в акциях</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Командировка</h3><span class="arrow">→</span></div>
+          <p>Оплата проживания/Компенсация затрат на питание/Билеты на транспорт</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Социальные программы</h3><span class="arrow">→</span></div>
+          <p>Поддержка семей/Программы для людей с ограниченными возможностями</p>
+        </div>
+        <div class="category-card">
+          <div class="card-header"><h3>Инновации</h3><span class="arrow">→</span></div>
+          <p>Инвестирование в стартапы/Поддержка исследовательских проектов</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div><!-- /.home-screen -->
+
+  <!-- AI Mode Screen -->
+  <div class="ai-screen" id="aiScreen">
+    <div class="ai-main">
+      <button class="back-btn" id="backBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Назад
+      </button>
+
+      <div class="ai-conversation">
+        <div class="user-message" id="userQuestion">VPN</div>
+
+        <div class="ai-message">
+          <div class="ai-message-header">
+            <div class="ai-avatar"></div>
+          </div>
+          <div class="ai-thinking" id="aiThinking2">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="ai-message-body" id="aiAnswerBody" style="display:none">
+            <p>Чтобы подключиться к корпоративному VPN, нужно сделать три вещи:</p>
+            <ol>
+              <li>
+                <strong>Получить VPN-токен.</strong>
+                Заполните форму заявки в разделе IT → Внешние подключения. Согласование занимает обычно 1 рабочий день.
+              </li>
+              <li>
+                <strong>Установить клиент.</strong>
+                Для личных компьютеров используйте инструкцию из Wiki, для смартфонов — отдельный гайд в разделе IT.
+              </li>
+              <li>
+                <strong>Активировать токен</strong>
+                через приложение и подключиться к серверу <code style="background:#f5f5f5;padding:2px 6px;border-radius:4px;font-size:13px;">vpn.corp.yandex-team.ru</code>
+              </li>
+            </ol>
+            <p>Если что-то не работает после подключения — проверьте, что включён двухфакторный токен и используется свежая версия клиента. Хочешь, помогу разобраться с конкретной ошибкой?</p>
+
+            <div class="ai-message-actions">
+              <button class="action-btn" title="Нравится">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              </button>
+              <button class="action-btn" title="Не нравится">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/></svg>
+              </button>
+              <button class="action-btn" title="Скопировать">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+              <button class="action-btn" title="Перегенерировать">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              </button>
+              <button class="sources-pill">
+                <span class="sources-stack">
+                  <span class="src-icon src-1">W</span>
+                  <span class="src-icon src-2">V</span>
+                  <span class="src-icon src-3">i</span>
+                </span>
+                4 источника
+              </button>
             </div>
           </div>
         </div>
-        <div class="field-hint" id="apps-hint">
-          Не знаешь что выбрать? <a href="#" id="problem-link">Напиши нам</a>
+      </div>
+
+      <!-- Input dock -->
+      <div class="ai-input-dock">
+        <div class="ai-input-card">
+          <textarea class="ai-input-textarea" id="aiInputTextarea" placeholder="Задать вопрос или просто пообщаться" rows="1"></textarea>
+          <div class="ai-input-controls">
+            <div class="ai-input-tools">
+              <button class="tool-pill">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Пообщаться
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button class="tool-pill">
+                Alice AI LLM
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
+            <button class="send-btn" id="aiSendBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="ai-disclaimer">Я Team AI может допускать ошибки. Проверьте важную информацию</div>
+      </div>
+    </div>
+
+    <!-- Right column — search results -->
+    <aside class="ai-results">
+      <h3 class="ai-results-title">Результат поиска</h3>
+      <div class="ai-results-list">
+        <div class="ai-result-item">
+          <div class="ai-result-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </div>
+          <div class="ai-result-content">
+            <div class="ai-result-title">Подключение к VPN на личных компьютерах<span class="dot">•</span><span class="meta">Wiki</span></div>
+            <div class="ai-result-path">https://wiki.yandex-team.ru/itproduct/design/navigacija-po-fajjlam-produkt</div>
+          </div>
+        </div>
+        <div class="ai-result-item">
+          <div class="ai-result-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="ai-result-content">
+            <div class="ai-result-title">VPN-токен<span class="dot">•</span><span class="meta">Форма заявки</span></div>
+            <div class="ai-result-path">IT &gt; Внешние подключения &gt; ... &gt; VPN</div>
+          </div>
+        </div>
+        <div class="ai-result-item">
+          <div class="ai-result-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          </div>
+          <div class="ai-result-content">
+            <div class="ai-result-title">Подключение к VPN на личных смартфонах<span class="dot">•</span><span class="meta">Инструкция</span></div>
+            <div class="ai-result-path">IT &gt; Внешние подключения &gt; ... &gt; VPN</div>
+          </div>
+        </div>
+        <div class="ai-result-item">
+          <div class="ai-result-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div class="ai-result-content">
+            <div class="ai-result-title">VPN<span class="dot">•</span><span class="meta">Папка с материалами</span></div>
+            <div class="ai-result-path">IT &gt; Внешние подключения</div>
+          </div>
         </div>
       </div>
+    </aside>
+  </div>
+</main>
 
-      <!-- Justification (for normal flow) -->
-      <div class="form-group" id="justification-group">
-        <label class="form-label">
-          Обоснование для запроса <span class="required">*</span>
-        </label>
-        <textarea class="form-textarea" placeholder="Описание рабочих задач, для которых нужен запрашиваемый продукт"></textarea>
-      </div>
-
-      <!-- Problem description (for problem flow) - hidden by default -->
-      <div class="form-group hidden" id="problem-group">
-        <label class="form-label">
-          Описание проблемы <span class="required">*</span>
-        </label>
-        <textarea class="form-textarea" placeholder="Опишите, что именно произошло: лицензия пропала, нужна на новом устройстве, больше не нужна, и т.д."></textarea>
-      </div>
-
-      <button class="submit-button" id="submit-button">Отправить</button>
-    </div>
+<!-- Floating widgets -->
+<div class="floating-widgets">
+  <div class="sidebar-collapse">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </div>
+  <div class="right-widgets">
+    <button class="chip-btn">
+      Чат поддержки
+      <svg class="chip-icon-tg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="chip-btn">
+      Helpy AI
+      <svg class="chip-icon-ai" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+    </button>
+    <button class="settings-fab">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
 <script>
-  // ===== State =====
-  const state = {
-    selectOpen: false,
-    selectedApp: null,
-    isProblemFlow: false,
-  };
+  const searchOverlay = document.getElementById('searchOverlay');
+  const searchBar = document.getElementById('searchBar');
+  const searchInput = document.getElementById('searchInput');
+  const suggestions = document.getElementById('suggestions');
+  const suggestionsSkeleton = document.getElementById('suggestionsSkeleton');
+  const aiModeBtn = document.getElementById('aiModeBtn');
+  const backdrop = document.getElementById('backdrop');
+  const bodyContent = document.getElementById('bodyContent');
+  const homeScreen = document.getElementById('homeScreen');
+  const aiScreen = document.getElementById('aiScreen');
+  const backBtn = document.getElementById('backBtn');
+  const userQuestion = document.getElementById('userQuestion');
+  const aiThinking2 = document.getElementById('aiThinking2');
+  const aiAnswerBody = document.getElementById('aiAnswerBody');
+  const aiInputTextarea = document.getElementById('aiInputTextarea');
+  const aiSendBtn = document.getElementById('aiSendBtn');
+  const floatingWidgets = document.querySelector('.floating-widgets');
+  const searchRow = document.querySelector('.search-row');
+  const hint = document.getElementById('hint');
 
-  // ===== Toast =====
-  function showToast(message, duration = 2200) {
-    const t = document.getElementById('toast');
-    t.textContent = message;
-    t.classList.add('show');
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => t.classList.remove('show'), duration);
-  }
+  let skeletonTimer = null;
 
-  // ===== OS pill selection =====
-  document.querySelectorAll('.pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-    });
-  });
+  // Show hint briefly on load
+  setTimeout(() => hint.classList.add('visible'), 600);
+  setTimeout(() => hint.classList.remove('visible'), 4500);
 
-  // ===== Custom select =====
-  const trigger = document.getElementById('select-trigger');
-  const dropdown = document.getElementById('select-dropdown');
-  const label = document.getElementById('select-label');
-  const searchInput = document.getElementById('select-search-input');
+  // ===== Search focus / suggestions =====
 
-  function openSelect() {
-    state.selectOpen = true;
-    trigger.classList.add('open');
-    dropdown.classList.add('open');
-    setTimeout(() => searchInput.focus(), 50);
-  }
-
-  function closeSelect() {
-    state.selectOpen = false;
-    trigger.classList.remove('open');
-    dropdown.classList.remove('open');
-    searchInput.value = '';
-    filterOptions('');
-  }
-
-  trigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    state.selectOpen ? closeSelect() : openSelect();
-  });
-
-  document.addEventListener('click', (e) => {
-    if (state.selectOpen && !dropdown.contains(e.target) && e.target !== trigger) {
-      closeSelect();
+  function focusSearch() {
+    searchOverlay.classList.add('focused');
+    searchBar.classList.add('focused');
+    backdrop.classList.add('visible');
+    // On focus with empty input — show suggestions immediately
+    if (!searchInput.value.trim()) {
+      suggestions.classList.add('visible');
+      suggestionsSkeleton.classList.remove('visible');
     }
-  });
+    searchInput.focus();
+  }
 
-  // Filter options on search; problem option is always visible (pinned)
-  function filterOptions(query) {
-    const q = query.toLowerCase().trim();
-    document.querySelectorAll('.select-option').forEach(opt => {
-      // Problem option is always visible, regardless of search
-      if (opt.dataset.special === 'true') {
-        opt.style.display = '';
-        return;
+  function blurSearch() {
+    searchOverlay.classList.remove('focused');
+    searchBar.classList.remove('focused');
+    backdrop.classList.remove('visible');
+    suggestions.classList.remove('visible');
+    suggestionsSkeleton.classList.remove('visible');
+    if (skeletonTimer) {
+      clearTimeout(skeletonTimer);
+      skeletonTimer = null;
+    }
+  }
+
+  function showSkeletonThenSuggestions() {
+    // Show skeleton immediately, hide real suggestions
+    suggestions.classList.remove('visible');
+    suggestionsSkeleton.classList.add('visible');
+
+    // After delay — swap skeleton out, real suggestions in
+    if (skeletonTimer) clearTimeout(skeletonTimer);
+    skeletonTimer = setTimeout(() => {
+      suggestionsSkeleton.classList.remove('visible');
+      suggestions.classList.add('visible');
+      skeletonTimer = null;
+    }, 650);
+  }
+
+  searchBar.addEventListener('click', focusSearch);
+  searchInput.addEventListener('focus', focusSearch);
+
+  searchInput.addEventListener('input', () => {
+    const val = searchInput.value.trim();
+    if (val) {
+      showSkeletonThenSuggestions();
+    } else {
+      // Empty input → just show suggestions, no skeleton
+      if (skeletonTimer) {
+        clearTimeout(skeletonTimer);
+        skeletonTimer = null;
       }
-      const text = opt.textContent.toLowerCase();
-      opt.style.display = text.includes(q) ? '' : 'none';
-    });
+      suggestionsSkeleton.classList.remove('visible');
+      suggestions.classList.add('visible');
+    }
+  });
+
+  backdrop.addEventListener('click', () => {
+    blurSearch();
+    searchInput.blur();
+  });
+
+  // ===== AI Mode screen =====
+
+  function openAIScreen(query) {
+    userQuestion.textContent = query;
+    homeScreen.classList.add('hidden');
+    aiScreen.classList.add('active');
+    floatingWidgets.style.display = 'none';
+    searchRow.style.display = 'none';
+    hint.classList.remove('visible');
+    blurSearch();
+
+    // Reset & animate thinking → answer
+    aiThinking2.style.display = 'flex';
+    aiAnswerBody.style.display = 'none';
+    setTimeout(() => {
+      aiThinking2.style.display = 'none';
+      aiAnswerBody.style.display = 'block';
+      aiAnswerBody.style.animation = 'fadeIn 0.4s ease';
+    }, 1200);
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  searchInput.addEventListener('input', (e) => {
-    filterOptions(e.target.value);
+  function closeAIScreen() {
+    aiScreen.classList.remove('active');
+    homeScreen.classList.remove('hidden');
+    floatingWidgets.style.display = '';
+    searchRow.style.display = '';
+    searchInput.value = '';
+  }
+
+  backBtn.addEventListener('click', closeAIScreen);
+
+  // AI mode button — also opens AI screen with whatever's typed (or default)
+  aiModeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const q = searchInput.value.trim() || 'VPN';
+    openAIScreen(q);
   });
 
-  // Option click
-  document.querySelectorAll('.select-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      const value = opt.dataset.value;
-      const isSpecial = opt.dataset.special === 'true';
-      label.textContent = value;
-      trigger.classList.add('has-value');
-      state.selectedApp = value;
-      state.isProblemFlow = isSpecial;
+  // ===== Keyboard =====
 
-      switchFormMode(isSpecial);
-      closeSelect();
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (aiScreen.classList.contains('active')) {
+        closeAIScreen();
+      } else {
+        blurSearch();
+        searchInput.blur();
+      }
+    }
+    if (e.key === '/' && document.activeElement !== searchInput && document.activeElement !== aiInputTextarea) {
+      if (!aiScreen.classList.contains('active')) {
+        e.preventDefault();
+        focusSearch();
+      }
+    }
+    if (e.key === 'Enter' && document.activeElement === searchInput && searchInput.value.trim()) {
+      e.preventDefault();
+      openAIScreen(searchInput.value.trim());
+    }
+  });
+
+  // ===== Suggestion items =====
+
+  document.querySelectorAll('.suggestion-item').forEach(item => {
+    item.addEventListener('mouseenter', () => {
+      document.querySelectorAll('.suggestion-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+    item.addEventListener('click', () => {
+      const title = item.dataset.title || '';
+      searchInput.value = title;
+      blurSearch();
     });
   });
 
-  // ===== Form mode switching =====
-  function switchFormMode(isProblem) {
-    const justification = document.getElementById('justification-group');
-    const problem = document.getElementById('problem-group');
-    const fieldForLabel = document.getElementById('field-for-label');
-    const submitButton = document.getElementById('submit-button');
-    const appsHint = document.getElementById('apps-hint');
+  // ===== AI input dock =====
 
-    if (isProblem) {
-      justification.classList.add('hidden');
-      problem.classList.remove('hidden');
-      fieldForLabel.innerHTML = 'Кому нужна помощь <span class="required">*</span>';
-      submitButton.textContent = 'Отправить запрос';
-      appsHint.style.display = 'none';
+  aiInputTextarea.addEventListener('input', () => {
+    aiInputTextarea.style.height = 'auto';
+    aiInputTextarea.style.height = Math.min(aiInputTextarea.scrollHeight, 120) + 'px';
+    if (aiInputTextarea.value.trim()) {
+      aiSendBtn.classList.add('has-text');
     } else {
-      justification.classList.remove('hidden');
-      problem.classList.add('hidden');
-      fieldForLabel.innerHTML = 'Заказать новое ПО для <span class="required">*</span>';
-      submitButton.textContent = 'Отправить';
-      appsHint.style.display = '';
-    }
-  }
-
-  // ===== Hint link: open dropdown and highlight problem option =====
-  document.getElementById('problem-link').addEventListener('click', (e) => {
-    e.preventDefault();
-    openSelect();
-    const problemOpt = document.querySelector('.problem-option');
-    if (problemOpt) {
-      problemOpt.style.background = 'var(--bg-pill)';
-      setTimeout(() => { problemOpt.style.background = ''; }, 1500);
+      aiSendBtn.classList.remove('has-text');
     }
   });
 
-  // ===== Submit =====
-  document.getElementById('submit-button').addEventListener('click', () => {
-    if (state.isProblemFlow) {
-      showToast('Запрос направлен в поддержку — оператор скоро ответит');
-    } else {
-      showToast('Заявка на ПО отправлена');
+  aiInputTextarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const val = aiInputTextarea.value.trim();
+      if (val) {
+        // For demo: just update user question and re-show thinking
+        userQuestion.textContent = val;
+        aiInputTextarea.value = '';
+        aiInputTextarea.style.height = 'auto';
+        aiSendBtn.classList.remove('has-text');
+        aiThinking2.style.display = 'flex';
+        aiAnswerBody.style.display = 'none';
+        setTimeout(() => {
+          aiThinking2.style.display = 'none';
+          aiAnswerBody.style.display = 'block';
+        }, 1200);
+      }
     }
   });
 
-  // ===== Close modal =====
-  document.querySelector('.modal-close').addEventListener('click', () => {
-    showToast('В прототипе модалка не закрывается');
-  });
-
-  // ===== Add self =====
-  document.querySelector('.add-self-link').addEventListener('click', (e) => {
-    e.preventDefault();
-    const input = document.querySelector('.form-input');
-    input.value = '@test-user';
+  aiSendBtn.addEventListener('click', () => {
+    const ev = new KeyboardEvent('keydown', { key: 'Enter' });
+    aiInputTextarea.dispatchEvent(ev);
   });
 </script>
 
