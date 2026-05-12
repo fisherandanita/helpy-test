@@ -1223,6 +1223,213 @@
     color: var(--text);
   }
 
+  /* Editable user message — small revert chip below */
+  .user-message-wrap {
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    max-width: 80%;
+  }
+
+  .user-message-wrap .user-message {
+    align-self: auto;
+    max-width: 100%;
+  }
+
+  .msg-edit-link {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.12s, background 0.12s;
+  }
+
+  .msg-edit-link:hover {
+    color: var(--text);
+    background: var(--hover);
+  }
+
+  .msg-edit-link svg {
+    flex-shrink: 0;
+  }
+
+  /* Cancel link in AI message */
+  .scenario-cancel {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .scenario-cancel button {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.12s, background 0.12s;
+  }
+
+  .scenario-cancel button:hover {
+    color: #c43232;
+    background: rgba(196, 50, 50, 0.06);
+  }
+
+  /* Edit menu on confirm card */
+  .edit-menu {
+    margin-top: 14px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .edit-menu-title {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 8px 12px 6px;
+  }
+
+  .edit-menu-item {
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: background 0.12s;
+  }
+
+  .edit-menu-item:hover {
+    background: var(--hover);
+  }
+
+  .edit-menu-item .current {
+    color: var(--text-tertiary);
+    font-size: 13px;
+  }
+
+  .edit-menu-close {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 8px;
+    text-align: center;
+    margin-top: 4px;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+  }
+
+  /* Confirmation dialog (cancel order) */
+  .confirm-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .confirm-modal.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .confirm-modal-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 380px;
+    width: calc(100% - 32px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+    transform: translateY(8px) scale(0.97);
+    transition: transform 0.2s ease;
+  }
+
+  .confirm-modal.visible .confirm-modal-card {
+    transform: translateY(0) scale(1);
+  }
+
+  .confirm-modal h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .confirm-modal p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .confirm-modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .confirm-modal-actions button {
+    height: 38px;
+    padding: 0 18px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text);
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .confirm-modal-actions button:hover {
+    background: var(--hover);
+    border-color: var(--border-hover);
+  }
+
+  .confirm-modal-actions button.danger {
+    background: #c43232;
+    border-color: #c43232;
+    color: white;
+  }
+
+  .confirm-modal-actions button.danger:hover {
+    background: #a82a2a;
+    border-color: #a82a2a;
+  }
+
   .ai-message {
     align-self: flex-start;
     width: 100%;
@@ -2018,6 +2225,18 @@
   </div>
 </main>
 
+<!-- Confirm modal (used for "cancel scenario") -->
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-modal-card">
+    <h3 id="confirmModalTitle">Отменить заявку?</h3>
+    <p id="confirmModalText">Прогресс не сохранится — придётся начать заново.</p>
+    <div class="confirm-modal-actions">
+      <button id="confirmModalCancel">Продолжить оформление</button>
+      <button class="danger" id="confirmModalConfirm">Отменить заявку</button>
+    </div>
+  </div>
+</div>
+
 <!-- AI input dock — at body level so it escapes any transform context from animated parents -->
 <div class="ai-input-dock" id="aiInputDock" style="display:none">
   <div class="ai-input-card">
@@ -2353,6 +2572,125 @@
     return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
   }
 
+  // ===== Scenario helpers: edit, cancel, confirm modal =====
+
+  // Append a user reply wrapped with an "Изменить" link below it.
+  // onEdit() will be called when user clicks Изменить; before calling it,
+  // we remove this reply and everything after it.
+  function appendEditableUserReply(text, onEdit) {
+    const conv = document.querySelector('.ai-conversation');
+    const wrap = document.createElement('div');
+    wrap.className = 'user-message-wrap';
+    wrap.innerHTML = `
+      <div class="user-message">${escapeHtml(text)}</div>
+      <button class="msg-edit-link" type="button" title="Изменить этот ответ">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Изменить
+      </button>
+    `;
+    conv.appendChild(wrap);
+    wrap.querySelector('.msg-edit-link').addEventListener('click', () => {
+      // Remove this wrap and everything that comes after
+      let next = wrap.nextElementSibling;
+      while (next) {
+        const n = next;
+        next = next.nextElementSibling;
+        n.remove();
+      }
+      wrap.remove();
+      onEdit();
+    });
+    return wrap;
+  }
+
+  // Append a "cancel order" link inside an AI message bubble
+  function addCancelLink(aiBubbleBody) {
+    if (!aiBubbleBody) return;
+    // Don't double-add
+    if (aiBubbleBody.querySelector('.scenario-cancel')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'scenario-cancel';
+    wrap.innerHTML = `
+      <button type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Отменить заявку
+      </button>
+    `;
+    wrap.querySelector('button').addEventListener('click', () => {
+      showConfirmModal(
+        'Отменить оформление?',
+        'Прогресс по заявке не сохранится. Можно будет начать заново.',
+        'Отменить заявку',
+        cancelScenario
+      );
+    });
+    aiBubbleBody.appendChild(wrap);
+  }
+
+  // Generic confirm modal
+  function showConfirmModal(title, text, confirmLabel, onConfirm) {
+    const modal = document.getElementById('confirmModal');
+    document.getElementById('confirmModalTitle').textContent = title;
+    document.getElementById('confirmModalText').textContent = text;
+    const confirmBtn = document.getElementById('confirmModalConfirm');
+    const cancelBtn = document.getElementById('confirmModalCancel');
+    confirmBtn.textContent = confirmLabel;
+
+    const close = () => {
+      modal.classList.remove('visible');
+      confirmBtn.removeEventListener('click', onConfirmClick);
+      cancelBtn.removeEventListener('click', close);
+      document.removeEventListener('keydown', onEsc);
+    };
+    const onConfirmClick = () => {
+      close();
+      onConfirm();
+    };
+    const onEsc = (e) => {
+      if (e.key === 'Escape') close();
+    };
+    confirmBtn.addEventListener('click', onConfirmClick);
+    cancelBtn.addEventListener('click', close);
+    document.addEventListener('keydown', onEsc);
+    modal.classList.add('visible');
+  }
+
+  // Cancel the whole scenario — show a soft AI message, then return home
+  function cancelScenario() {
+    aiInputTextarea.dataset.scenario = '';
+    aiInputTextarea.placeholder = 'Задать вопрос или просто пообщаться';
+    const conv = document.querySelector('.ai-conversation');
+    const bye = document.createElement('div');
+    bye.className = 'ai-message';
+    bye.innerHTML = `
+      <div class="ai-message-header"><div class="ai-avatar"></div></div>
+      <div class="ai-message-body">
+        <p>Хорошо, заявка не оформлена. Если что — обращайтесь снова, помогу.</p>
+      </div>
+    `;
+    conv.appendChild(bye);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    setTimeout(() => closeAIScreen(), 1600);
+  }
+
+  // Restart step 1: re-enable buttons (we trust earlier message still exists)
+  function restartFromStepOne() {
+    const choices = document.getElementById('step1Choices');
+    if (choices) {
+      choices.querySelectorAll('.choice-btn').forEach(b => {
+        b.disabled = false;
+        b.style.opacity = '';
+        b.style.pointerEvents = '';
+      });
+    }
+    // Reset state downstream
+    window.__scenarioRecipient = null;
+    window.__scenarioOS = null;
+    aiInputTextarea.dataset.scenario = '';
+    aiInputTextarea.placeholder = 'Задать вопрос или просто пообщаться';
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+
   function stepOneChosen(value, label) {
     // Disable previous choices
     document.querySelectorAll('#step1Choices .choice-btn').forEach(b => {
@@ -2363,11 +2701,8 @@
 
     const conv = document.querySelector('.ai-conversation');
 
-    // Append user reply
-    const userReply = document.createElement('div');
-    userReply.className = 'user-message';
-    userReply.textContent = label;
-    conv.appendChild(userReply);
+    // Append user reply with "Изменить" chip (lets user revisit step 1)
+    appendEditableUserReply(label, restartFromStepOne);
 
     // Append AI thinking
     const aiThink = document.createElement('div');
@@ -2400,6 +2735,7 @@
         inp.addEventListener('input', (e) => renderUserPickerList(e.target.value));
         // Auto-focus for keyboard input
         setTimeout(() => inp.focus(), 100);
+        addCancelLink(aiThink.querySelector('.ai-message-body'));
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 900);
     } else {
@@ -2440,17 +2776,9 @@
   function userPicked(user) {
     window.__scenarioRecipient = user;
 
-    // Replace picker with a confirmation card (in the same AI message, no new bubble)
+    // Replace picker with a read-only card (still inside the same AI message)
     const picker = document.getElementById('userPicker');
     if (picker) {
-      // Show user reply with selected name first
-      const conv = document.querySelector('.ai-conversation');
-      const userReply = document.createElement('div');
-      userReply.className = 'user-message';
-      userReply.textContent = user.name;
-      conv.appendChild(userReply);
-
-      // Replace picker with read-only card
       picker.outerHTML = `
         <div class="selected-user-card" id="selectedUserCard">
           <div class="user-avatar ${user.avatar}">${getInitials(user.name)}</div>
@@ -2463,6 +2791,9 @@
       `;
       document.getElementById('changeUserBtn').addEventListener('click', changeUserClicked);
     }
+
+    // User reply with edit chip (chip also re-opens the picker, so two paths converge)
+    appendEditableUserReply(user.name, () => changeUserClicked(true));
 
     // New AI thinking bubble → continues to OS or justification
     const conv = document.querySelector('.ai-conversation');
@@ -2478,30 +2809,34 @@
     setTimeout(() => proceedToOSorJustification(aiThink), 900);
   }
 
-  function changeUserClicked() {
-    // Restore picker inline in place of the selected card
-    const card = document.getElementById('selectedUserCard');
-    if (!card) return;
+  function changeUserClicked(fromChip) {
+    // Two entry points:
+    //   - "Изменить" button next to the selected-user card (inside AI message)
+    //   - msg-edit-link chip below the user-reply bubble (already removed itself + everything after)
+    // In both cases we want to put the picker back where the card was.
 
-    // Find the parent AI-message that contains this card
-    const parentAiMessage = card.closest('.ai-message');
-
-    // Remove all conversation items that come AFTER the parent AI message
-    // (the previously chosen user's reply + subsequent AI questions/answers)
-    if (parentAiMessage) {
-      let next = parentAiMessage.nextElementSibling;
-      while (next) {
-        const toRemove = next;
-        next = next.nextElementSibling;
-        toRemove.remove();
-      }
-    }
-
-    // Also reset any downstream scenario state
+    // Reset state downstream
     window.__scenarioRecipient = null;
     window.__scenarioOS = null;
     aiInputTextarea.dataset.scenario = '';
     aiInputTextarea.placeholder = 'Задать вопрос или просто пообщаться';
+
+    const card = document.getElementById('selectedUserCard');
+    if (!card) return;
+
+    // If invoked from the in-card "Изменить" button, we also need to wipe
+    // everything after the card's parent AI message (the chip path already did this).
+    if (!fromChip) {
+      const parentAiMessage = card.closest('.ai-message');
+      if (parentAiMessage) {
+        let next = parentAiMessage.nextElementSibling;
+        while (next) {
+          const toRemove = next;
+          next = next.nextElementSibling;
+          toRemove.remove();
+        }
+      }
+    }
 
     // Replace the read-only card with the picker again
     card.outerHTML = `
@@ -2548,6 +2883,7 @@
       document.querySelectorAll('#osChoices .choice-btn').forEach(btn => {
         btn.addEventListener('click', () => osChosen(btn.dataset.os));
       });
+      addCancelLink(aiThink.querySelector('.ai-message-body'));
     } else {
       aiThink.innerHTML = `
         <div class="ai-message-header"><div class="ai-avatar"></div></div>
@@ -2559,7 +2895,24 @@
       aiInputTextarea.placeholder = 'Напишите обоснование...';
       aiInputTextarea.focus();
       aiInputTextarea.dataset.scenario = 'awaiting-justification';
+      addCancelLink(aiThink.querySelector('.ai-message-body'));
     }
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+
+  // Restart from OS step (re-enable buttons)
+  function restartFromOS() {
+    const choices = document.getElementById('osChoices');
+    if (choices) {
+      choices.querySelectorAll('.choice-btn').forEach(b => {
+        b.disabled = false;
+        b.style.opacity = '';
+        b.style.pointerEvents = '';
+      });
+    }
+    window.__scenarioOS = null;
+    aiInputTextarea.dataset.scenario = '';
+    aiInputTextarea.placeholder = 'Задать вопрос или просто пообщаться';
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   }
 
@@ -2574,10 +2927,8 @@
 
     const conv = document.querySelector('.ai-conversation');
 
-    const userReply = document.createElement('div');
-    userReply.className = 'user-message';
-    userReply.textContent = os;
-    conv.appendChild(userReply);
+    // Editable user reply (chip "Изменить" → restartFromOS)
+    appendEditableUserReply(os, restartFromOS);
 
     const aiThink = document.createElement('div');
     aiThink.className = 'ai-message';
@@ -2600,6 +2951,7 @@
       aiInputTextarea.placeholder = 'Напишите обоснование...';
       aiInputTextarea.focus();
       aiInputTextarea.dataset.scenario = 'awaiting-justification';
+      addCancelLink(aiThink.querySelector('.ai-message-body'));
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }, 1100);
   }
@@ -2610,11 +2962,8 @@
 
     const conv = document.querySelector('.ai-conversation');
 
-    // Append user message with justification
-    const userReply = document.createElement('div');
-    userReply.className = 'user-message';
-    userReply.textContent = justification;
-    conv.appendChild(userReply);
+    // Append user message with justification (editable)
+    appendEditableUserReply(justification, restartFromJustification);
 
     // Append AI thinking
     const aiThink = document.createElement('div');
@@ -2657,11 +3006,73 @@
       document.querySelectorAll('#step3Choices .choice-btn').forEach(btn => {
         btn.addEventListener('click', () => stepThreeChosen(btn.dataset.step3, btn.textContent));
       });
+      addCancelLink(aiThink.querySelector('.ai-message-body'));
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }, 1400);
   }
 
+  // Re-open input for justification rewrite
+  function restartFromJustification() {
+    // Build a fresh prompt
+    const conv = document.querySelector('.ai-conversation');
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'ai-message';
+    const product = window.__scenarioProduct || 'Cursor';
+    aiBubble.innerHTML = `
+      <div class="ai-message-header"><div class="ai-avatar"></div></div>
+      <div class="ai-message-body">
+        <p>Хорошо, перепишите обоснование — как ${escapeHtml(product)} поможет в работе.</p>
+      </div>
+    `;
+    conv.appendChild(aiBubble);
+    aiInputTextarea.value = '';
+    aiInputTextarea.placeholder = 'Напишите обоснование...';
+    aiInputTextarea.dataset.scenario = 'awaiting-justification';
+    addCancelLink(aiBubble.querySelector('.ai-message-body'));
+    setTimeout(() => aiInputTextarea.focus(), 100);
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  }
+
   function stepThreeChosen(value, label) {
+    // Edit path: show "what do you want to change?" menu instead of finalising
+    if (value === 'edit') {
+      const draftBubble = document.querySelector('#step3Choices').closest('.ai-message-body');
+      // Remove choice buttons; render an edit menu inline
+      const choices = document.getElementById('step3Choices');
+      if (choices) choices.remove();
+      const hasOS = !!window.__scenarioOS;
+      const recipient = window.__scenarioRecipient;
+      const recipientLabel = recipient ? `${recipient.name} (@${recipient.login})` : 'Для меня';
+
+      const menu = document.createElement('div');
+      menu.className = 'edit-menu';
+      menu.innerHTML = `
+        <div class="edit-menu-title">Что изменить?</div>
+        <button class="edit-menu-item" data-edit="recipient">
+          <span>Получатель</span>
+          <span class="current">${escapeHtml(recipientLabel)}</span>
+        </button>
+        ${hasOS ? `
+          <button class="edit-menu-item" data-edit="os">
+            <span>Операционная система</span>
+            <span class="current">${escapeHtml(window.__scenarioOS)}</span>
+          </button>` : ''}
+        <button class="edit-menu-item" data-edit="justification">
+          <span>Обоснование</span>
+          <span class="current">переписать заново</span>
+        </button>
+        <button class="edit-menu-close" data-edit="back">Вернуться к черновику</button>
+      `;
+      draftBubble.appendChild(menu);
+
+      menu.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => handleDraftEdit(btn.dataset.edit, draftBubble, menu));
+      });
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      return;
+    }
+
+    // Confirm path
     document.querySelectorAll('#step3Choices .choice-btn').forEach(b => {
       b.disabled = true;
       b.style.opacity = '0.5';
@@ -2699,7 +3110,98 @@
     }, 1300);
   }
 
-  backBtn.addEventListener('click', closeAIScreen);
+  // Handle "what to change" menu selections in draft
+  function handleDraftEdit(target, draftBubble, menu) {
+    if (target === 'back') {
+      // Restore the choice buttons, drop the menu
+      menu.remove();
+      const choices = document.createElement('div');
+      choices.className = 'choice-buttons';
+      choices.id = 'step3Choices';
+      choices.innerHTML = `
+        <button class="choice-btn primary" data-step3="confirm">Отправить заявку</button>
+        <button class="choice-btn" data-step3="edit">Изменить</button>
+      `;
+      draftBubble.appendChild(choices);
+      choices.querySelectorAll('.choice-btn').forEach(btn => {
+        btn.addEventListener('click', () => stepThreeChosen(btn.dataset.step3, btn.textContent));
+      });
+      return;
+    }
+
+    // For any actual edit: remove the draft message itself (and everything after — there's nothing
+    // after it normally, but just to be safe) and re-run the relevant step.
+    const draftAiMessage = draftBubble.closest('.ai-message');
+    if (draftAiMessage) {
+      let next = draftAiMessage.nextElementSibling;
+      while (next) {
+        const n = next; next = next.nextElementSibling; n.remove();
+      }
+      draftAiMessage.remove();
+    }
+
+    if (target === 'recipient') {
+      // Replace recipient step
+      window.__scenarioRecipient = null;
+      const conv = document.querySelector('.ai-conversation');
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'ai-message';
+      aiBubble.innerHTML = `
+        <div class="ai-message-header"><div class="ai-avatar"></div></div>
+        <div class="ai-message-body">
+          <p><strong>Для кого оформляем лицензию?</strong> Начните вводить имя или фамилию.</p>
+          <div class="user-picker" id="userPicker">
+            <div class="user-picker-search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="userPickerInput" placeholder="Имя или фамилия сотрудника" autocomplete="off">
+            </div>
+            <div class="user-picker-list" id="userPickerList"></div>
+          </div>
+        </div>
+      `;
+      conv.appendChild(aiBubble);
+      renderUserPickerList('');
+      const inp = document.getElementById('userPickerInput');
+      inp.addEventListener('input', (e) => renderUserPickerList(e.target.value));
+      setTimeout(() => inp.focus(), 100);
+      addCancelLink(aiBubble.querySelector('.ai-message-body'));
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    } else if (target === 'os') {
+      // Replace OS step
+      window.__scenarioOS = null;
+      const conv = document.querySelector('.ai-conversation');
+      const aiBubble = document.createElement('div');
+      aiBubble.className = 'ai-message';
+      conv.appendChild(aiBubble);
+      // Reuse proceedToOSorJustification but force needsOS path
+      window.__scenarioRequiresOS = true;
+      proceedToOSorJustification(aiBubble);
+    } else if (target === 'justification') {
+      restartFromJustification();
+    }
+  }
+
+  // "Назад" → confirm if scenario is mid-flight
+  backBtn.addEventListener('click', () => {
+    // Heuristic: scenario is in progress if there's a user-picker, an OS choices block,
+    // or input is awaiting justification, or there's a step3 draft visible
+    const inFlight =
+      document.getElementById('userPicker') ||
+      document.getElementById('osChoices') ||
+      document.getElementById('step3Choices') ||
+      aiInputTextarea.dataset.scenario === 'awaiting-justification';
+
+    if (inFlight) {
+      showConfirmModal(
+        'Выйти из оформления?',
+        'Прогресс по заявке не сохранится. Можно будет начать заново.',
+        'Выйти',
+        closeAIScreen
+      );
+    } else {
+      closeAIScreen();
+    }
+  });
 
   // AI mode button — also opens AI screen with whatever's typed (or default)
   aiModeBtn.addEventListener('click', (e) => {
